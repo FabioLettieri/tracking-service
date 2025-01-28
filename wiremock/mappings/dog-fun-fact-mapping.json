@@ -1,0 +1,18 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/api/v2/facts",
+    "queryParameters": {
+      "limit": {
+        "equalTo": "1"
+      }
+    }
+  },
+  "response": {
+    "status": 200,
+    "bodyFileName": "dog-fun-fact.json",
+    "headers": {
+      "Content-Type": "application/json"
+    }
+  }
+}

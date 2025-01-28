@@ -1,0 +1,9 @@
+{
+  "request": {
+    "method": "GET",
+    "urlPath": "/2025-12-27"
+  },
+  "response": {
+    "status": 500
+  }
+}
