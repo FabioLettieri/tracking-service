@@ -25,8 +25,10 @@ flyway:
   user: root
   password: 1234567
 
-
-
 server:
   port: 8080
+
+external-apis:
+  nager-date-url: "https://date.nager.at/Api/v2/PublicHolidays"
+  dog-api-url: "https://thedogapi.com/api/funfacts"
 
