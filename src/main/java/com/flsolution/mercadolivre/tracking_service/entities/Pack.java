@@ -7,12 +7,18 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
 @Entity
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Table(name = "packs")
 public class Pack extends EntityBase {
 
@@ -36,6 +42,6 @@ public class Pack extends EntityBase {
 	private String estimatedDeliveryDate;
 	
 	@Enumerated(EnumType.STRING)
-	private PackageStatus status = PackageStatus.CREATED;
+	private PackageStatus status;
 	
 }

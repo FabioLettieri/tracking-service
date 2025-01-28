@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.flsolution.mercadolivre</groupId>
     <artifactId>tracking-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.1</version>
     <name>tracking-service</name>
     <description>Sistema de rastreamento de pacotes</description>
 
@@ -83,8 +83,43 @@
 		    <groupId>org.springframework.boot</groupId>
 		    <artifactId>spring-boot-starter-amqp</artifactId>
 		</dependency>
+		
+		<dependency>
+		    <groupId>org.testcontainers</groupId>
+		    <artifactId>rabbitmq</artifactId>
+		    <scope>test</scope>
+		</dependency>
 
-        
+
+        <!-- WireMock -->
+		<dependency>
+		    <groupId>org.wiremock</groupId>
+		    <artifactId>wiremock-standalone</artifactId>
+		    <version>3.3.1</version>
+		    <scope>test</scope>
+		</dependency>
+		
+		<dependency>
+		    <groupId>com.github.tomakehurst</groupId>
+		    <artifactId>wiremock-jre8</artifactId>
+		    <version>2.35.0</version>
+		    <scope>test</scope>
+		</dependency>
+		
+        <!-- Mockito -->
+		<dependency>
+		    <groupId>org.mockito</groupId>
+		    <artifactId>mockito-core</artifactId>
+		    <scope>test</scope>
+		</dependency>
+		
+        <!-- Jackson -->
+		<dependency>
+		    <groupId>com.fasterxml.jackson.core</groupId>
+		    <artifactId>jackson-databind</artifactId>
+		</dependency>
+
+
     </dependencies>
 
     <build>

@@ -26,6 +26,15 @@ services:
     volumes:
       - db-data:/var/lib/mysql
 
+  wiremock:
+      image: wiremock/wiremock
+      container_name: wiremock
+      ports:
+        - "8089:8080"
+      volumes:
+        - ./wiremock:/home/wiremock
+      command: --verbose --global-response-templating
+
 networks:
   app-network:
     driver: bridge

@@ -19,6 +19,10 @@ spring:
     port: 5672
     username: admin
     password: admin
+    listener:
+      simple:
+        auto-startup: true
+        missing-queues-fatal: false
 
   main:
     allow-bean-definition-overriding: true
@@ -35,6 +39,6 @@ server:
   port: 8080
 
 external-apis:
-  nager-date-url: "https://date.nager.at/Api/v2/PublicHolidays"
-  dog-api-url: "https://thedogapi.com/api/funfacts"
+  nager-date-url: "https://date.nager.at/api/v3/publicholidays/2025/BR"
+  dog-api-url: "https://dogapi.dog/api/v2/facts?limit=1"
 

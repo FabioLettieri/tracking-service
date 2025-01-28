@@ -30,13 +30,13 @@ public abstract class EntityBase implements Serializable {
 	private Boolean isActive = true;
 	
 	@PrePersist
-	private void onCreate() {
+	protected void onCreate() {
 		this.createdAt = LocalDateTime.now();
 		this.updatedAt = LocalDateTime.now();
 	}
 
 	@PreUpdate
-	private void onUpdate() {
+	protected void onUpdate() {
 		this.updatedAt = LocalDateTime.now();
 	}
 	

@@ -3,12 +3,13 @@ package com.flsolution.mercadolivre.tracking_service.filters;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flsolution.mercadolivre.tracking_service.entities.RequestLog;
 import com.flsolution.mercadolivre.tracking_service.producers.RequestLogProducer;
@@ -23,6 +24,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 
+	private static final Logger logger = LoggerFactory.getLogger(RequestResponseLoggingFilter.class);
+
 	private final ObjectMapper objectMapper;
 	private final RequestLogProducer requestLogProducer;
 	
@@ -30,18 +33,28 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		
+		logger.info("[START] - doFilterInternal() request: {}, response: {}", request, response);
+		
 		ContentCachingRequestWrapper contentCachingRequestWrapper = new ContentCachingRequestWrapper(request);
 		ContentCachingResponseWrapper contentCachingResponseWrapper = new ContentCachingResponseWrapper(response);
 		
 		try {
 			filterChain.doFilter(contentCachingRequestWrapper, contentCachingResponseWrapper);
 		} finally {
-			logRequestResponse(contentCachingRequestWrapper, contentCachingResponseWrapper);
+			try {
+				logRequestResponse(contentCachingRequestWrapper, contentCachingResponseWrapper);
+			} catch (Exception ex) {
+				logger.info("[FINISH] - doFilterInternal() WITH ERRORS: {}", ex.getMessage());
+				ex.printStackTrace();
+			}
 			contentCachingResponseWrapper.copyBodyToResponse();
+			logger.info("[FINISH] - doFilterInternal()");
 		}
 	}
 
-	private void logRequestResponse(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response) throws JsonProcessingException {
+	private void logRequestResponse(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response) throws Exception {
+		logger.info("[START] - logRequestResponse() request: {}, response: {}", request, response);
+
 		String requestBody = extractBody(request.getContentAsByteArray());
 		String responseBody = extractBody(response.getContentAsByteArray());
 		
@@ -54,15 +67,22 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 				.build();
 		
 		String logMessage = objectMapper.writeValueAsString(requestlog);
-		requestLogProducer.sendRequestLog(logMessage);
+		requestLogProducer.sendMessage(logMessage);
+		
+		logger.info("[FINISH] - logRequestResponse()");
 	}
 	
 	private String extractBody(byte[] content) {
+		logger.info("[START] - extractBody() content: {}", content);
 		if (content == null || content.length == 0) {
+			logger.info("[FINISH] - extractBody() WITH NULL");
 			return null;
 		}
 		
-		return new String(content, StandardCharsets.UTF_8);
+		String response = new String(content, StandardCharsets.UTF_8);
+		
+		logger.info("[FINISH] - extractBody()");
+		return response;
 	}
 	
 	
