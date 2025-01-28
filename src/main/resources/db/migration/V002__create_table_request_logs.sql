@@ -1,0 +1,11 @@
+CREATE TABLE request_logs (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    method VARCHAR(50) NOT NULL,
+    endpoint VARCHAR(255) NOT NULL,
+    request_body TEXT,
+    response_body TEXT,
+    status_code INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    is_active BOOLEAN DEFAULT TRUE
+);
