@@ -43,9 +43,14 @@ public class PackConverter {
 				pack.getCreatedAt(),
 				pack.getUpdatedAt());
 		
+		if (pack.getDeliveredAt() != null) {
+	        response.setDeliveredAt(pack.getDeliveredAt());
+	    }
+		
+		
 		logger.info("[FINISH] - toResponseDTO()");
 
 		return response;
 	}
-	
+
 }

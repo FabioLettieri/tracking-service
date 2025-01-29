@@ -31,7 +31,6 @@ public class ExternalApiNagerService implements ExternalApiNagerServiceImpl {
             String url = String.format("%s/%s", nagerDateUrl, date);
             String response = restTemplate.getForObject(url, String.class);
 
-            // Converte o JSON para um objeto HolidayResponse
             HolidayResponse holidayResponse = objectMapper.readValue(response, HolidayResponse.class);
             boolean isHoliday = holidayResponse.isHoliday();
 

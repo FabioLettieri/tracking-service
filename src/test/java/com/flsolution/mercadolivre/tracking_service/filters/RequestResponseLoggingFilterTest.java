@@ -1,8 +1,12 @@
 package com.flsolution.mercadolivre.tracking_service.filters;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -20,6 +24,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flsolution.mercadolivre.tracking_service.entities.RequestLog;
 import com.flsolution.mercadolivre.tracking_service.producers.RequestLogProducer;
@@ -52,7 +57,7 @@ class RequestResponseLoggingFilterTest {
     }
 
     @Test
-    void testDoFilterInternal() throws ServletException, IOException, Exception {
+    void testDoFilterInternal_Success() throws ServletException, IOException, Exception {
         request.setMethod("POST");
         request.setRequestURI("/api/v1/test");
         request.setContent("{\"key\":\"value\"}".getBytes());
@@ -76,4 +81,49 @@ class RequestResponseLoggingFilterTest {
         verify(requestLogProducer).sendMessage(eq(expectedRequestLogJson));
     }
 
+    @SuppressWarnings("serial")
+	@Test
+    void testDoFilterInternal_WhenExceptionOccursDuringLogging_ShouldHandleGracefully() throws Exception {
+        request.setMethod("GET");
+        request.setRequestURI("/api/v1/fail");
+
+        response.setStatus(500);
+        response.getWriter().write("{\"error\":\"failure\"}");
+        response.getWriter().flush();
+
+        ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper(request);
+        ContentCachingResponseWrapper wrappedResponse = new ContentCachingResponseWrapper(response);
+
+        doThrow(new JsonProcessingException("Simulated error") {}).when(objectMapper).writeValueAsString(any(RequestLog.class));
+
+        filter.doFilterInternal(wrappedRequest, wrappedResponse, filterChain);
+
+        verify(requestLogProducer, never()).sendMessage(any());
+    }
+
+    @Test
+    void testLogRequestResponse_WithValidRequestResponse() throws Exception {
+        ContentCachingRequestWrapper wrappedRequest = new ContentCachingRequestWrapper(request);
+        ContentCachingResponseWrapper wrappedResponse = new ContentCachingResponseWrapper(response);
+
+        when(objectMapper.writeValueAsString(any(RequestLog.class))).thenReturn("{}");
+
+        filter.doFilterInternal(wrappedRequest, wrappedResponse, filterChain);
+
+        verify(requestLogProducer, times(1)).sendMessage(any());
+    }
+
+    @Test
+    void testExtractBody_WithValidContent() {
+        byte[] content = "{\"key\":\"value\"}".getBytes();
+        String result = filter.extractBody(content);
+        assertEquals("{\"key\":\"value\"}", result);
+    }
+
+    @Test
+    void testExtractBody_WithEmptyContent_ShouldReturnNull() {
+        byte[] content = {};
+        String result = filter.extractBody(content);
+        assertEquals(null, result);
+    }
 }

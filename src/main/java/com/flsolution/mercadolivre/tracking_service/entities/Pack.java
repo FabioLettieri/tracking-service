@@ -1,5 +1,7 @@
 package com.flsolution.mercadolivre.tracking_service.entities;
 
+import java.time.LocalDateTime;
+
 import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
 
 import jakarta.persistence.Column;
@@ -21,6 +23,25 @@ import lombok.Setter;
 @AllArgsConstructor
 @Table(name = "packs")
 public class Pack extends EntityBase {
+	
+	
+	public Pack(
+			String description, 
+			String sender, 
+			String recipient, 
+			Boolean isHolliday, 
+			String funFact,
+			String estimatedDeliveryDate, 
+			PackageStatus status) {
+		
+		this.description = description;
+		this.sender = sender;
+		this.recipient = recipient;
+		this.isHolliday = isHolliday;
+		this.funFact = funFact;
+		this.estimatedDeliveryDate = estimatedDeliveryDate;
+		this.status = status;
+	}
 
 	private static final long serialVersionUID = 7447140689941622598L;
 	
@@ -43,5 +64,8 @@ public class Pack extends EntityBase {
 	
 	@Enumerated(EnumType.STRING)
 	private PackageStatus status;
+	
+	@Column(nullable = true)
+    private LocalDateTime deliveredAt;
 	
 }

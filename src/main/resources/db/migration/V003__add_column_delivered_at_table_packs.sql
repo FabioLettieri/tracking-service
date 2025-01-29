@@ -1,0 +1,2 @@
+ALTER TABLE packs
+ADD COLUMN delivered_at DATETIME NULL;

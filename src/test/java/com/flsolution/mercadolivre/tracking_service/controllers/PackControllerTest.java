@@ -1,8 +1,10 @@
 package com.flsolution.mercadolivre.tracking_service.controllers;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
@@ -21,6 +23,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackRequestDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackResponseDTO;
+import com.flsolution.mercadolivre.tracking_service.dtos.updates.UpdateStatusRequest;
 import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
 import com.flsolution.mercadolivre.tracking_service.services.impl.PackServiceImpl;
 
@@ -97,6 +100,53 @@ class PackControllerTest {
         mockMvc.perform(post("/api/v1/packs")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(invalidRequest)))
+                .andExpect(status().isBadRequest());
+    }
+    
+    @Test
+    void testUpdateStatusPackSuccessfully() throws Exception {
+        Long packId = 1L;
+        UpdateStatusRequest updateStatusRequest = new UpdateStatusRequest();
+        updateStatusRequest.setStatus(PackageStatus.IN_TRANSIT);
+        
+
+        PackResponseDTO responseDTO = new PackResponseDTO(
+            packId,
+            "Livros para entrega",
+            "Loja ABC",
+            "João Silva",
+            PackageStatus.IN_TRANSIT,
+            LocalDateTime.now().minusDays(1),
+            LocalDateTime.now()
+        );
+
+        lenient().when(packService.updateStatusPack(eq(packId), eq(PackageStatus.IN_TRANSIT))).thenReturn(responseDTO);
+
+        mockMvc.perform(put("/api/v1/packs/{id}/status", packId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(updateStatusRequest)))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testUpdateStatusPackWithInvalidTransition() throws Exception {
+    	Long packId = 1L;
+    	
+    	PackResponseDTO responseDTO = new PackResponseDTO(
+                packId,
+                "Livros para entrega",
+                "Loja ABC",
+                "João Silva",
+                PackageStatus.CREATED,
+                LocalDateTime.now().minusDays(1),
+                LocalDateTime.now()
+            );
+    	
+        lenient().when(packService.updateStatusPack(eq(packId), eq(PackageStatus.DELIVERED))).thenReturn(responseDTO);
+
+        mockMvc.perform(put("/api/v1/packs/{id}/status", packId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(PackageStatus.DELIVERED)))
                 .andExpect(status().isBadRequest());
     }
 }
