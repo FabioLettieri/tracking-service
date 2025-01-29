@@ -29,7 +29,6 @@ public class PackEventHelperService implements PackEventHelperServiceImpl {
 		List<PackEvent> eventPacks = packEventRepository.findByPackId(id);
 
 		logger.info("[FINISH] - findPackById()");
-		
 		return eventPacks;
 	}
 

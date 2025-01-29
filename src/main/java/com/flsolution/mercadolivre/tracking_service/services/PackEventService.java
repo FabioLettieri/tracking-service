@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.flsolution.mercadolivre.tracking_service.converters.PackEventConverter;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackEventDTO;
+import com.flsolution.mercadolivre.tracking_service.dtos.PackEventRequestDTO;
 import com.flsolution.mercadolivre.tracking_service.entities.Pack;
 import com.flsolution.mercadolivre.tracking_service.entities.PackEvent;
 import com.flsolution.mercadolivre.tracking_service.repositories.PackEventRepository;

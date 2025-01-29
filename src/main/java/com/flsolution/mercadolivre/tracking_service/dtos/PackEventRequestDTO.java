@@ -1,4 +1,4 @@
-package com.flsolution.mercadolivre.tracking_service.services;
+package com.flsolution.mercadolivre.tracking_service.dtos;
 
 import java.time.Instant;
 import java.time.LocalDateTime;

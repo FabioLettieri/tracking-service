@@ -6,9 +6,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flsolution.mercadolivre.tracking_service.dtos.HolidayResponseDTO;
 import com.flsolution.mercadolivre.tracking_service.services.impl.ExternalApiNagerServiceImpl;
 
 import lombok.RequiredArgsConstructor;
@@ -31,25 +30,17 @@ public class ExternalApiNagerService implements ExternalApiNagerServiceImpl {
             String url = String.format("%s/%s", nagerDateUrl, date);
             String response = restTemplate.getForObject(url, String.class);
 
-            HolidayResponse holidayResponse = objectMapper.readValue(response, HolidayResponse.class);
+            HolidayResponseDTO holidayResponse = objectMapper.readValue(response, HolidayResponseDTO.class);
             boolean isHoliday = holidayResponse.isHoliday();
 
             logger.info("[FINISH] - isHolliday() result: {}", isHoliday);
             return isHoliday;
         } catch (Exception ex) {
-            logger.error("[ERROR] - isHolliday() WITH ERRORS: {}", ex.getMessage(), ex);
+            logger.error("[ERROR] - isHolliday() WITH ERRORS: {}", ex.getMessage());
             return false;
         }
     }
 
-    @JsonIgnoreProperties(ignoreUnknown = true)
-    private static class HolidayResponse {
-        @JsonProperty("holiday")
-        private boolean holiday;
-
-        public boolean isHoliday() {
-            return holiday;
-        }
-    }
+    
 
 }

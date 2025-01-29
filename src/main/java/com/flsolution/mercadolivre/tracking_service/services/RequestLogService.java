@@ -25,7 +25,6 @@ public class RequestLogService implements RequestLogServiceImpl {
 			RequestLog response = requestLogRepository.save(requestLog);
 			
 			logger.info("[FINISH] - createLogRequest()");
-
 			return response;
 		} catch (Exception ex) {
 			logger.info("[FINISH] - createLogRequest() WITH ERRORS: {}", ex.getMessage());

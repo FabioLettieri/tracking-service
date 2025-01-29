@@ -1,5 +1,6 @@
 package com.flsolution.mercadolivre.tracking_service.utils;
 
+import org.apache.coyote.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,8 +26,23 @@ public class PackValidation {
 		}
 		
 		logger.info("[FINISH] - isValidTransition() - FALSE");
-		
 		return false;
+	}
+
+	public static void validatePackElegibleForCancellation(PackageStatus status) throws BadRequestException {
+		logger.info("[START] - validatePackElegibleForCancellation() status: {}", status);
+		
+		if (status == PackageStatus.IN_TRANSIT) {
+			logger.info("[FINISH] - validatePackElegibleForCancellation() WITH ERRORS");
+			throw new BadRequestException("The package is already on its way and cannot be canceled. Wait for delivery and refuse.");
+		}
+
+		if (status == PackageStatus.CANCELLED) {
+			logger.info("[FINISH] - validatePackElegibleForCancellation() WITH ERRORS");
+			throw new BadRequestException("Package is already canceled, no action will be registered.");
+		}
+		
+		logger.info("[FINISH] - validatePackElegibleForCancellation()");
 	}
 
 }

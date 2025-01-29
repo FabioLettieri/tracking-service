@@ -31,7 +31,7 @@ public class RequestLogConsumer {
 			
 			logger.info("[FINISH] - consumeRequestLog()");
 		} catch (Exception ex) {
-			logger.error("[FINSH] - consumeRequestLog() WITH ERRORS: {}", ex.getMessage(), ex);
+			logger.error("[FINSH] - consumeRequestLog() WITH ERRORS: {}", ex.getMessage());
 		}
 	}
 	

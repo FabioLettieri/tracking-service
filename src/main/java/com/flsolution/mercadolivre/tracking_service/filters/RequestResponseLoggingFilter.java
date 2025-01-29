@@ -47,6 +47,7 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 				logger.info("[FINISH] - doFilterInternal() WITH ERRORS: {}", ex.getMessage());
 				ex.printStackTrace();
 			}
+			
 			contentCachingResponseWrapper.copyBodyToResponse();
 			logger.info("[FINISH] - doFilterInternal()");
 		}

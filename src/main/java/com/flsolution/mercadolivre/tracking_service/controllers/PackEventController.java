@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.flsolution.mercadolivre.tracking_service.dtos.PackEventDTO;
-import com.flsolution.mercadolivre.tracking_service.services.PackEventRequestDTO;
+import com.flsolution.mercadolivre.tracking_service.dtos.PackEventRequestDTO;
+import com.flsolution.mercadolivre.tracking_service.services.impl.PackEventProducerServiceImpl;
 import com.flsolution.mercadolivre.tracking_service.services.impl.PackEventServiceImpl;
 
 import jakarta.validation.Valid;
@@ -25,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class PackEventController {
 	private static final Logger logger = LoggerFactory.getLogger(PackEventController.class);
 	private final PackEventServiceImpl packEventServiceImpl;
+	private final PackEventProducerServiceImpl packEventProducerServiceImpl;
 	
 	@GetMapping
 	public ResponseEntity<List<PackEventDTO>> getPacks(
@@ -40,13 +42,13 @@ public class PackEventController {
 	}
 	
 	@PostMapping
-    public ResponseEntity<PackEventDTO> createPackEvent(@RequestBody @Valid PackEventRequestDTO requestDTO) {
+    public ResponseEntity<String> createPackEvent(@RequestBody @Valid PackEventRequestDTO requestDTO) throws Exception {
         logger.info("[START] - createPackEvent()");
 
-        PackEventDTO response = packEventServiceImpl.createPackEvent(requestDTO);
+        packEventProducerServiceImpl.sendPackEvent(requestDTO);
 
         logger.info("[FINISH] - createPackEvent()");
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok("Event sent for processing.");
     }
 	
 	

@@ -4,9 +4,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 
 import com.flsolution.mercadolivre.tracking_service.dtos.PackEventDTO;
+import com.flsolution.mercadolivre.tracking_service.dtos.PackEventRequestDTO;
 import com.flsolution.mercadolivre.tracking_service.entities.Pack;
 import com.flsolution.mercadolivre.tracking_service.entities.PackEvent;
-import com.flsolution.mercadolivre.tracking_service.services.PackEventRequestDTO;
 
 public class PackEventConverter {
 	

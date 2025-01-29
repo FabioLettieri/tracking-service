@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.flsolution.mercadolivre.tracking_service.dtos.PackCancelResponseDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackEventDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackRequestDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackResponseDTO;
@@ -14,9 +15,6 @@ import com.flsolution.mercadolivre.tracking_service.entities.Pack;
 import com.flsolution.mercadolivre.tracking_service.entities.PackEvent;
 import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
 
-import lombok.NoArgsConstructor;
-
-@NoArgsConstructor
 public class PackConverter {
 	
 	private static final Logger logger = LoggerFactory.getLogger(PackConverter.class);
@@ -34,7 +32,6 @@ public class PackConverter {
 				.build();
 		
 		logger.info("[FINISH] - toEntity()");
-
 		return response;
 	}
 	
@@ -55,11 +52,11 @@ public class PackConverter {
 		
 		
 		logger.info("[FINISH] - toResponseDTO()");
-
 		return response;
 	}
 	
 	public static PackResponseDTO listEventToResponseDTO(Pack pack, List<PackEvent> events) {
+		logger.info("[START] - listEventToResponseDTO() pack: {}, events: {}", pack, events);
         List<PackEventDTO> eventDTOs = events.stream()
                 .map(event -> new PackEventDTO(
                         pack.getId(),
@@ -69,9 +66,7 @@ public class PackConverter {
                 ))
                 .collect(Collectors.toList());
         
-        
-        
-        return PackResponseDTO.builder()
+        PackResponseDTO response = PackResponseDTO.builder()
                 .id(pack.getId())
                 .description(pack.getDescription())
                 .sender(pack.getSender())
@@ -82,6 +77,21 @@ public class PackConverter {
                 .deliveredAt(pack.getDeliveredAt())
                 .events(eventDTOs.isEmpty() ? null : eventDTOs)
                 .build();
+        
+        logger.info("[FINISH] - listEventToResponseDTO()");
+        return response;
     }
+	
+	public static PackCancelResponseDTO toCancelResponseDTO(Pack pack) {
+		logger.info("[START] - toCancelResponseDTO() pack: {}", pack);
+		PackCancelResponseDTO response = PackCancelResponseDTO.builder()
+				.id(pack.getId())
+				.status(pack.getStatus())
+				.updatedAt(pack.getUpdatedAt())
+				.build();
+		
+		logger.info("[FINISH] - toCancelResponseDTO()");
+		return response;
+	}
 
 }

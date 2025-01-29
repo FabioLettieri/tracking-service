@@ -3,6 +3,7 @@ package com.flsolution.mercadolivre.tracking_service.services;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import org.apache.coyote.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.flsolution.mercadolivre.tracking_service.converters.PackConverter;
+import com.flsolution.mercadolivre.tracking_service.dtos.PackCancelResponseDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackRequestDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackResponseDTO;
 import com.flsolution.mercadolivre.tracking_service.entities.Pack;
@@ -47,7 +49,6 @@ public class PackService implements PackServiceImpl {
 		PackResponseDTO response = PackConverter.toResponseDTO(savedPack);
 		
 		logger.info("[FINISH] - createPack()");
-		
 		return response;
 	}
 
@@ -68,7 +69,6 @@ public class PackService implements PackServiceImpl {
 		PackResponseDTO response = PackConverter.toResponseDTO(updatedPack);
 		
 		logger.info("[FINISH] - updateStatusPack()");
-		
 		return response;
 	}
 
@@ -84,7 +84,6 @@ public class PackService implements PackServiceImpl {
 		PackResponseDTO response = PackConverter.listEventToResponseDTO(pack, events);
 		
 		logger.info("[FINISH] - getPackById()");
-
 		return response;
 	}
 
@@ -92,12 +91,26 @@ public class PackService implements PackServiceImpl {
 	public Pack getPackById(Long id) {
 		logger.info("[START] - getPackById() id: {}", id);
 		
-		Pack pack = packRepository.findById(id)
+		Pack response = packRepository.findById(id)
 				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pack not found."));
 
 		logger.info("[FINISH] - getPackById()");
+		return response;
+	}
+
+	@Override
+	public PackCancelResponseDTO cancelPack(Long id) throws BadRequestException {
+		logger.info("[START] - cencelPack() id: {}", id);
+
+		Pack pack = getPackById(id);
 		
-		return pack;
+		PackValidation.validatePackElegibleForCancellation(pack.getStatus());
+		
+		pack.setStatus(PackageStatus.CANCELLED);
+		PackCancelResponseDTO response = PackConverter.toCancelResponseDTO(packRepository.save(pack));
+		
+		logger.info("[FINISH] - cencelPack()");
+		return response;
 	}
 	
 }

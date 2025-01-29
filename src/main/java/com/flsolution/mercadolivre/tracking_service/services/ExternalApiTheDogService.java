@@ -30,7 +30,6 @@ public class ExternalApiTheDogService implements ExternalApiTheDogServiceImpl {
             String response = responseDogApi.getData().get(0).getAttributes().getBody();
 			
 			logger.info("[FINISH] - getFunFact()");
-			
 			return response;
 		} catch (Exception ex) {
 			logger.info("[FINISH] - getFunFact() WITH ERRORS: {}", ex.getMessage());

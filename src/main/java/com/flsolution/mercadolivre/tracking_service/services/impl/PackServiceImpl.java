@@ -1,5 +1,8 @@
 package com.flsolution.mercadolivre.tracking_service.services.impl;
 
+import org.apache.coyote.BadRequestException;
+
+import com.flsolution.mercadolivre.tracking_service.dtos.PackCancelResponseDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackRequestDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackResponseDTO;
 import com.flsolution.mercadolivre.tracking_service.entities.Pack;
@@ -9,7 +12,8 @@ public interface PackServiceImpl {
 	PackResponseDTO createPack(PackRequestDTO request);
 	PackResponseDTO updateStatusPack(Long id, PackageStatus packageStatus);
 	PackResponseDTO getPackByIdAndIncludeEvents(Long id, Boolean includeEvents);
-	Pack getPackById(Long id);
+	PackCancelResponseDTO cancelPack(Long id) throws BadRequestException;
 	
+	Pack getPackById(Long id);
 
 }
