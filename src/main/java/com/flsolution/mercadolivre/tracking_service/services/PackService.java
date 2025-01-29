@@ -1,6 +1,7 @@
 package com.flsolution.mercadolivre.tracking_service.services;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import com.flsolution.mercadolivre.tracking_service.converters.PackConverter;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackRequestDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackResponseDTO;
 import com.flsolution.mercadolivre.tracking_service.entities.Pack;
+import com.flsolution.mercadolivre.tracking_service.entities.PackEvent;
 import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
 import com.flsolution.mercadolivre.tracking_service.repositories.PackRepository;
 import com.flsolution.mercadolivre.tracking_service.services.impl.PackServiceImpl;
@@ -26,6 +28,7 @@ public class PackService implements PackServiceImpl {
 	private static final Logger logger = LoggerFactory.getLogger(PackService.class);
 	
 	private final PackRepository packRepository;
+	private final PackEventHelperService packEventHelperService;
 	private final ExternalApiNagerService apiNagerService;
 	private final ExternalApiTheDogService apiTheDogService;
 	
@@ -52,8 +55,7 @@ public class PackService implements PackServiceImpl {
 	public PackResponseDTO updateStatusPack(Long id, PackageStatus packageStatus) {
 		logger.info("[START] - updateStatusPack() id: {}, packageStatus: {}", id, packageStatus);
 
-		Pack pack = packRepository.findById(id)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pack not found."));
+		Pack pack = getPackById(id);
 		
 		PackValidation.validateStatusTransition(pack.getStatus(), packageStatus);
 		pack.setStatus(packageStatus);
@@ -70,6 +72,32 @@ public class PackService implements PackServiceImpl {
 		return response;
 	}
 
-	
 
+	@Override
+	public PackResponseDTO getPackByIdAndIncludeEvents(Long id, Boolean includeEvents) {
+		logger.info("[START] - getPackById() id: {}, includeEvents: {}", id, includeEvents);
+		
+		Pack pack = getPackById(id);
+		
+		List<PackEvent> events = includeEvents ? packEventHelperService.findByPackId(id) : List.of();
+		
+		PackResponseDTO response = PackConverter.listEventToResponseDTO(pack, events);
+		
+		logger.info("[FINISH] - getPackById()");
+
+		return response;
+	}
+
+	@Override
+	public Pack getPackById(Long id) {
+		logger.info("[START] - getPackById() id: {}", id);
+		
+		Pack pack = packRepository.findById(id)
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pack not found."));
+
+		logger.info("[FINISH] - getPackById()");
+		
+		return pack;
+	}
+	
 }

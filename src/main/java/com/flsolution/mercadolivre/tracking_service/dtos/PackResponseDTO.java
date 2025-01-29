@@ -1,17 +1,22 @@
 package com.flsolution.mercadolivre.tracking_service.dtos;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
+@AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PackResponseDTO {
 	
@@ -42,5 +47,6 @@ public class PackResponseDTO {
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
 	private LocalDateTime deliveredAt;
+	private List<PackEventDTO> events;
 	
 }

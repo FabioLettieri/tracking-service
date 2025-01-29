@@ -25,6 +25,7 @@ import com.flsolution.mercadolivre.tracking_service.dtos.PackRequestDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackResponseDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.updates.UpdateStatusRequest;
 import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
+import com.flsolution.mercadolivre.tracking_service.services.PackEventService;
 import com.flsolution.mercadolivre.tracking_service.services.impl.PackServiceImpl;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,6 +33,9 @@ class PackControllerTest {
 
     @Mock
     private PackServiceImpl packService;
+    
+    @Mock
+    private PackEventService packEventService;
 
     @InjectMocks
     private PackController packController;
@@ -149,4 +153,5 @@ class PackControllerTest {
                 .content(objectMapper.writeValueAsString(PackageStatus.DELIVERED)))
                 .andExpect(status().isBadRequest());
     }
+
 }

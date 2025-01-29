@@ -1,13 +1,17 @@
 package com.flsolution.mercadolivre.tracking_service.entities;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -67,5 +71,8 @@ public class Pack extends EntityBase {
 	
 	@Column(nullable = true)
     private LocalDateTime deliveredAt;
+	
+	@OneToMany(mappedBy = "pack", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<PackEvent> events;
 	
 }

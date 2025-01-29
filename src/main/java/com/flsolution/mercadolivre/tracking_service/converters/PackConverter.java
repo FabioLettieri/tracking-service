@@ -1,11 +1,17 @@
 package com.flsolution.mercadolivre.tracking_service.converters;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.flsolution.mercadolivre.tracking_service.dtos.PackEventDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackRequestDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackResponseDTO;
 import com.flsolution.mercadolivre.tracking_service.entities.Pack;
+import com.flsolution.mercadolivre.tracking_service.entities.PackEvent;
 import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
 
 import lombok.NoArgsConstructor;
@@ -52,5 +58,30 @@ public class PackConverter {
 
 		return response;
 	}
+	
+	public static PackResponseDTO listEventToResponseDTO(Pack pack, List<PackEvent> events) {
+        List<PackEventDTO> eventDTOs = events.stream()
+                .map(event -> new PackEventDTO(
+                        pack.getId(),
+                        event.getLocation(),
+                        event.getDescription(),
+                        LocalDateTime.now()
+                ))
+                .collect(Collectors.toList());
+        
+        
+        
+        return PackResponseDTO.builder()
+                .id(pack.getId())
+                .description(pack.getDescription())
+                .sender(pack.getSender())
+                .recipient(pack.getRecipient())
+                .status(pack.getStatus())
+                .createdAt(pack.getCreatedAt())
+                .updatedAt(pack.getUpdatedAt())
+                .deliveredAt(pack.getDeliveredAt())
+                .events(eventDTOs.isEmpty() ? null : eventDTOs)
+                .build();
+    }
 
 }
