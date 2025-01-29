@@ -12,6 +12,7 @@ public class PackEventConverter {
 	
 	public static PackEventDTO toDTO(PackEvent event) {
         return new PackEventDTO(
+        		event.getId(),
                 event.getPack().getId(),
                 event.getLocation(),
                 event.getDescription(),

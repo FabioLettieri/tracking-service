@@ -3,6 +3,9 @@ package com.flsolution.mercadolivre.tracking_service.controllers;
 import org.apache.coyote.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,13 +58,26 @@ public class PackController {
 	@GetMapping("/{id}")
 	public ResponseEntity<PackResponseDTO> getPackById(
 		    @PathVariable Long id,
-		    @RequestParam(required = false, defaultValue = "false") boolean includeEvents) {
+		    @RequestParam(required = false, defaultValue = "false") boolean includeEvents,
+		    @PageableDefault(size = 50) Pageable pageable) {
 
         logger.info("[START] - getPackById() id: {}, includeEvents: {}", id, includeEvents);
 
-        PackResponseDTO response = packServiceImpl.getPackByIdAndIncludeEvents(id, includeEvents);
+        PackResponseDTO response = packServiceImpl.getPackByIdAndIncludeEvents(id, includeEvents, pageable);
 
         logger.info("[FINISH] - getPackById()");
+        return ResponseEntity.ok(response);
+    }
+	
+	@GetMapping
+	public ResponseEntity<Page<PackResponseDTO>> getPacks(
+		    @PageableDefault(size = 50) Pageable pageable) {
+
+        logger.info("[START] - getPacks() pageable: {}", pageable);
+
+        Page<PackResponseDTO> response = packServiceImpl.getPacks(pageable);
+
+        logger.info("[FINISH] - getPacks()");
         return ResponseEntity.ok(response);
     }
 	

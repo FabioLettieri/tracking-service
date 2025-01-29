@@ -36,12 +36,6 @@ public class PackEvent extends EntityBase {
 	@JoinColumn(name = "pack_id", nullable = false)
 	private Pack pack;
 	
-	@Column(name = "sender", nullable = false)
-	private String sender;
-	
-	@Column(name = "recipient", nullable = false)
-	private String recipient;
-	
 	@Column(nullable = false)
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
 	private LocalDateTime eventDateTime;

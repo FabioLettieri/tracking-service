@@ -17,6 +17,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class PackEventDTO {
 
+	private Long id;
 	private Long packId;
 	private String location;
 	private String description;

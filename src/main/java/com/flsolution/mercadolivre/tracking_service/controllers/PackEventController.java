@@ -1,15 +1,15 @@
 package com.flsolution.mercadolivre.tracking_service.controllers;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.flsolution.mercadolivre.tracking_service.dtos.PackEventDTO;
@@ -29,13 +29,11 @@ public class PackEventController {
 	private final PackEventProducerServiceImpl packEventProducerServiceImpl;
 	
 	@GetMapping
-	public ResponseEntity<List<PackEventDTO>> getPacks(
-	        @RequestParam(required = false) String sender,
-	        @RequestParam(required = false) String recipient) {
+	public ResponseEntity<Page<PackEventDTO>> getPacks(@PageableDefault(size = 50) Pageable pageable) {
 
-	    logger.info("[START] - getPacks() sender: {}, recipient: {}", sender, recipient);
+	    logger.info("[START] - getPacks() pageable: {}", pageable);
 
-	    List<PackEventDTO> response = packEventServiceImpl.getPackEvents(sender, recipient);
+	    Page<PackEventDTO> response = packEventServiceImpl.getPackEvents(pageable);
 
 	    logger.info("[FINISH] - getPacks()");
 	    return ResponseEntity.ok(response);

@@ -1,11 +1,11 @@
 package com.flsolution.mercadolivre.tracking_service.converters;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
 
 import com.flsolution.mercadolivre.tracking_service.dtos.PackCancelResponseDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackEventDTO;
@@ -55,14 +55,15 @@ public class PackConverter {
 		return response;
 	}
 	
-	public static PackResponseDTO listEventToResponseDTO(Pack pack, List<PackEvent> events) {
+	public static PackResponseDTO listEventToResponseDTO(Pack pack, Page<PackEvent> events) {
 		logger.info("[START] - listEventToResponseDTO() pack: {}, events: {}", pack, events);
         List<PackEventDTO> eventDTOs = events.stream()
                 .map(event -> new PackEventDTO(
+                		event.getId(),
                         pack.getId(),
                         event.getLocation(),
                         event.getDescription(),
-                        LocalDateTime.now()
+                        event.getEventDateTime()
                 ))
                 .collect(Collectors.toList());
         
@@ -92,6 +93,20 @@ public class PackConverter {
 		
 		logger.info("[FINISH] - toCancelResponseDTO()");
 		return response;
+	}
+
+	public static Page<PackResponseDTO> toListPackResponseDTO(Page<Pack> packs) {
+		Page<PackResponseDTO> responseDTOs = packs.map(event -> new PackResponseDTO(
+                		event.getId(),
+                        event.getDescription(),
+                        event.getSender(),
+                        event.getRecipient(),
+                        event.getStatus(),
+                        event.getCreatedAt(),
+                        event.getUpdatedAt()
+                ));
+		
+		return responseDTOs;
 	}
 
 }

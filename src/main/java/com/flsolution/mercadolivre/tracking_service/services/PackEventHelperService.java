@@ -1,9 +1,9 @@
 package com.flsolution.mercadolivre.tracking_service.services;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.flsolution.mercadolivre.tracking_service.converters.PackEventConverter;
@@ -23,36 +23,24 @@ public class PackEventHelperService implements PackEventHelperServiceImpl {
 	private final PackEventRepository packEventRepository;
 
 	@Override
-	public List<PackEvent> findByPackId(Long id) {
+	public Page<PackEvent> findByPackId(Long id, Pageable pageable) {
 		logger.info("[START] - findPackById() id: {}", id);
 		
-		List<PackEvent> eventPacks = packEventRepository.findByPackId(id);
+		Page<PackEvent> eventPacks = packEventRepository.findByPackId(id, pageable);
 
 		logger.info("[FINISH] - findPackById()");
 		return eventPacks;
 	}
 
 	@Override
-	public List<PackEventDTO> getPackEvents(String sender, String recipient) {
-	    logger.info("[START] - getPackEvents() sender: {}, recipient: {}", sender, recipient);
+	public Page<PackEventDTO> getPackEvents(Pageable pageable) {
+	    logger.info("[START] - getPackEvents() pageable: {}", pageable);
 		
-		List<PackEvent> events;
+		Page<PackEvent> events = packEventRepository.findAll(pageable);
 		
-		if (sender != null && recipient != null) {
-		    events = packEventRepository.findBySenderAndRecipient(sender, recipient);
-		} else if (sender != null) {
-		    events = packEventRepository.findBySender(sender);
-		} else if (recipient != null) {
-		    events = packEventRepository.findByRecipient(recipient);
-		} else {
-		    events = packEventRepository.findAll();
-		}
+		Page<PackEventDTO> response = events.map(PackEventConverter::toDTO);
 		
-		List<PackEventDTO> response = events.stream()
-		        .map(PackEventConverter::toDTO)
-		        .toList();
-		
-		logger.info("[FINISH] - getPackEvents() total found: {}", response.size());
+		logger.info("[FINISH] - getPackEvents() total found: {}, total pages: {}", response.getTotalElements(), response.getTotalPages());
 		return response;
 	}
 

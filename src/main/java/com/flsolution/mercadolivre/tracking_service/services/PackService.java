@@ -1,11 +1,12 @@
 package com.flsolution.mercadolivre.tracking_service.services;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 import org.apache.coyote.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -74,12 +75,12 @@ public class PackService implements PackServiceImpl {
 
 
 	@Override
-	public PackResponseDTO getPackByIdAndIncludeEvents(Long id, Boolean includeEvents) {
+	public PackResponseDTO getPackByIdAndIncludeEvents(Long id, Boolean includeEvents, Pageable pageable) {
 		logger.info("[START] - getPackById() id: {}, includeEvents: {}", id, includeEvents);
 		
 		Pack pack = getPackById(id);
 		
-		List<PackEvent> events = includeEvents ? packEventHelperService.findByPackId(id) : List.of();
+		Page<PackEvent> events = includeEvents ? packEventHelperService.findByPackId(id, pageable) : Page.empty();
 		
 		PackResponseDTO response = PackConverter.listEventToResponseDTO(pack, events);
 		
@@ -110,6 +111,17 @@ public class PackService implements PackServiceImpl {
 		PackCancelResponseDTO response = PackConverter.toCancelResponseDTO(packRepository.save(pack));
 		
 		logger.info("[FINISH] - cencelPack()");
+		return response;
+	}
+
+	@Override
+	public Page<PackResponseDTO> getPacks(Pageable pageable) {
+		logger.info("[START] - getPacks() pageable: {}", pageable);
+		Page<Pack> packs = packRepository.findAll(pageable);
+		
+		Page<PackResponseDTO> response = PackConverter.toListPackResponseDTO(packs);
+		
+		logger.info("[FINISH] - getPacks() total elements: {}, total pages: {}", response.getTotalElements(), response.getTotalPages());
 		return response;
 	}
 	

@@ -1,9 +1,9 @@
 package com.flsolution.mercadolivre.tracking_service.services;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.flsolution.mercadolivre.tracking_service.converters.PackEventConverter;
@@ -29,22 +29,22 @@ public class PackEventService implements PackEventServiceImpl {
 	private final PackService packService;
 	
 	@Override
-	public List<PackEvent> findByPackId(Long id) {
+	public Page<PackEvent> findByPackId(Long id, Pageable pageable) {
 		logger.info("[START] - findPackById() id: {}", id);
 		
-		List<PackEvent> eventPacks = packEventHelperService.findByPackId(id);
+		Page<PackEvent> eventPacks = packEventHelperService.findByPackId(id, pageable);
 
 		logger.info("[FINISH] - findPackById()");
 		return eventPacks;
 	}
 	
 	@Override
-    public List<PackEventDTO> getPackEvents(String sender, String recipient) {
-        logger.info("[START] - getPackEvents() sender: {}, recipient: {}", sender, recipient);
+    public Page<PackEventDTO> getPackEvents(Pageable pageable) {
+        logger.info("[START] - getPackEvents() sender: {}, pageable: {}", pageable);
 
-        List<PackEventDTO> response = packEventHelperService.getPackEvents(sender, recipient);
+        Page<PackEventDTO> response = packEventHelperService.getPackEvents(pageable);
 
-        logger.info("[FINISH] - getPackEvents() total found: {}", response.size());
+        logger.info("[FINISH] - getPackEvents() total found: {}, total pages: {}", response.getTotalElements(), response.getTotalPages());
         return response;
     }
 
