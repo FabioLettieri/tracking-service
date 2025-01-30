@@ -4,5 +4,6 @@ public enum PackageStatus {
     CREATED, 
     IN_TRANSIT, 
     DELIVERED, 
-    CANCELLED
+    CANCELLED,
+    CANCELED_DUE_TO_INACTIVITY
 }

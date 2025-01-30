@@ -34,6 +34,7 @@ public class PackService implements PackServiceImpl {
 	private final PackEventHelperService packEventHelperService;
 	private final ExternalApiNagerService apiNagerService;
 	private final ExternalApiTheDogService apiTheDogService;
+	private final PackHelperService packHelperService;
 	
 	@Override
 	public PackResponseDTO createPack(PackRequestDTO request) {
@@ -113,13 +114,11 @@ public class PackService implements PackServiceImpl {
 		logger.info("[FINISH] - cencelPack()");
 		return response;
 	}
-
-	@Override
-	public Page<PackResponseDTO> getPacks(Pageable pageable) {
-		logger.info("[START] - getPacks() pageable: {}", pageable);
-		Page<Pack> packs = packRepository.findAll(pageable);
 		
-		Page<PackResponseDTO> response = PackConverter.toListPackResponseDTO(packs);
+	@Override
+	public Page<PackResponseDTO> getPacks(String sender, String recipient, Pageable pageable) {
+		logger.info("[START] - getPacks() pageable: {}", pageable);
+		Page<PackResponseDTO> response = packHelperService.getPackEvents(sender, recipient, pageable);
 		
 		logger.info("[FINISH] - getPacks() total elements: {}, total pages: {}", response.getTotalElements(), response.getTotalPages());
 		return response;

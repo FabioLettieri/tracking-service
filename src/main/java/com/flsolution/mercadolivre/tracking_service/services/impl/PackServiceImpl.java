@@ -14,8 +14,8 @@ public interface PackServiceImpl {
 	PackResponseDTO createPack(PackRequestDTO request);
 	PackResponseDTO updateStatusPack(Long id, PackageStatus packageStatus);
 	PackResponseDTO getPackByIdAndIncludeEvents(Long id, Boolean includeEvents, Pageable pageable);
-
-	Page<PackResponseDTO> getPacks(Pageable pageable);
+	
+	Page<PackResponseDTO> getPacks(String sender, String recipient, Pageable pageable);
 
 	PackCancelResponseDTO cancelPack(Long id) throws BadRequestException;
 	

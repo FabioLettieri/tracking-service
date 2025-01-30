@@ -34,7 +34,7 @@ public class PackController {
 	private final PackServiceImpl packServiceImpl;
 	
 	@PostMapping
-	public ResponseEntity<PackResponseDTO> createPack(@RequestBody PackRequestDTO request) throws Exception {
+	public ResponseEntity<PackResponseDTO> createPack(@RequestBody @Valid PackRequestDTO request) throws Exception {
 		logger.info("[START] - createPack() request: {}", request);
 		
 		PackResponseDTO response = packServiceImpl.createPack(request);
@@ -44,12 +44,12 @@ public class PackController {
 	}
 	
 	@PutMapping("/{id}/status")
-	public ResponseEntity<PackResponseDTO> putMethodName(@PathVariable Long id, @RequestBody @Valid UpdateStatusRequest request) {
-		logger.info("[START] - putMethodName() request: {}", request);
+	public ResponseEntity<PackResponseDTO> updatePackStatus(@PathVariable Long id, @RequestBody @Valid UpdateStatusRequest request) {
+		logger.info("[START] - updatePackStatus() request: {}", request);
 		
 		PackResponseDTO response = packServiceImpl.updateStatusPack(id, request.getStatus());
 		
-		logger.info("[FINISH] - putMethodName()");
+		logger.info("[FINISH] - updatePackStatus()");
 		return ResponseEntity.ok(response);
 	}
 	
@@ -69,23 +69,25 @@ public class PackController {
 	
 	@GetMapping
 	public ResponseEntity<Page<PackResponseDTO>> getPacks(
+			@RequestParam(required = false) String sender,
+	        @RequestParam(required = false) String recipient,
 		    @PageableDefault(size = 50) Pageable pageable) {
 
-        logger.info("[START] - getPacks() pageable: {}", pageable);
-
-        Page<PackResponseDTO> response = packServiceImpl.getPacks(pageable);
-
-        logger.info("[FINISH] - getPacks()");
+		logger.info("[START] - getPacks() sender: {}, recipient: {}, pageable: {}", sender, recipient, pageable);
+		
+		Page<PackResponseDTO> response = packServiceImpl.getPacks(sender, recipient, pageable);
+		
+		logger.info("[FINISH] - getPacks()");
         return ResponseEntity.ok(response);
     }
 	
 	@PutMapping("/{id}/cancel")
-	public ResponseEntity<PackCancelResponseDTO> putMethodName(@PathVariable Long id) throws BadRequestException {
-		logger.info("[START] - putMethodName() id: {}", id);
+	public ResponseEntity<PackCancelResponseDTO> cancelPack(@PathVariable Long id) throws BadRequestException {
+		logger.info("[START] - cancelPack() id: {}", id);
 		
 		PackCancelResponseDTO response = packServiceImpl.cancelPack(id);
 		
-		logger.info("[FINISH] - putMethodName()");
+		logger.info("[FINISH] - cancelPack()");
 		return ResponseEntity.ok(response);
 	}
 	
