@@ -25,6 +25,11 @@ import com.flsolution.mercadolivre.tracking_service.dtos.updates.UpdateStatusReq
 import com.flsolution.mercadolivre.tracking_service.services.ETagService;
 import com.flsolution.mercadolivre.tracking_service.services.impl.PackServiceImpl;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,15 +37,17 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/packs")
+@Tag(name = "Packs", description = "Gerenciamento de pacotes")
 public class PackController {
 	private static final Logger logger = LoggerFactory.getLogger(PackController.class);
 	
 	private final PackServiceImpl packServiceImpl;
 	private final ETagService eTagService;
 	
-	
+	@Operation(summary = "Criar um novo pacote", description = "Cria um novo pacote para rastreamento")
+	@ApiResponse(responseCode = "200", description = "Pacote criado com sucesso.", content = @Content(schema = @Schema(implementation = PackResponseDTO.class)))
 	@PostMapping
-	public ResponseEntity<PackResponseDTO> createPack(@RequestBody @Valid PackRequestDTO request) throws Exception {
+	public ResponseEntity<PackResponseDTO> createPack(@RequestBody @Valid PackRequestDTO request) {
 		logger.info("[START] - createPack() request: {}", request);
 		
 		PackResponseDTO response = packServiceImpl.createPack(request);
@@ -49,6 +56,8 @@ public class PackController {
 		return ResponseEntity.ok(response);
 	}
 	
+	@Operation(summary = "Atualizar status do pacote", description = "Atualiza o status de um pacote específico")
+	@ApiResponse(responseCode = "200", description = "Status atualizado com sucesso.", content = @Content(schema = @Schema(implementation = PackResponseDTO.class)))
 	@PutMapping("/{id}/status")
 	public ResponseEntity<PackResponseDTO> updatePackStatus(@PathVariable Long id, @RequestBody @Valid UpdateStatusRequest request) {
 		logger.info("[START] - updatePackStatus() request: {}", request);
@@ -59,6 +68,9 @@ public class PackController {
 		return ResponseEntity.ok(response);
 	}
 	
+	@Operation(summary = "Buscar pacote por um ID", description = "Recupera as informações de um pacote pelo seu ID")
+	@ApiResponse(responseCode = "200", description = "Pacote encontrado", content = @Content(schema = @Schema(implementation = PackResponseDTO.class)))
+	@ApiResponse(responseCode = "404", description = "Pacote não encontrado")
 	@GetMapping("/{id}")
 	public ResponseEntity<PackResponseDTO> getPackById(
 		    @PathVariable Long id,
@@ -84,6 +96,8 @@ public class PackController {
                 .body(response);
     }
 	
+	@Operation(summary = "Buscar todos os pacotes", description = "Retorna todos os pacotes paginado")
+	@ApiResponse(responseCode = "200", description = "Pacotes encontrados", content = @Content(schema = @Schema(implementation = PackResponseDTO.class)))
 	@GetMapping
 	public ResponseEntity<Page<PackResponseDTO>> getPacks(
 			@RequestParam(required = false) String sender,
@@ -109,6 +123,9 @@ public class PackController {
 				.body(response);
     }
 
+	@Operation(summary = "Cancelar um pacote específico", description = "Cancela um pacote antes da entrega ao cliente")
+	@ApiResponse(responseCode = "200", description = "Cancelamento efetuado", content = @Content(schema = @Schema(implementation = PackCancelResponseDTO.class)))
+	@ApiResponse(responseCode = "400", description = "Cancelamento não realizado")
 	@PutMapping("/{id}/cancel")
 	public ResponseEntity<PackCancelResponseDTO> cancelPack(@PathVariable Long id) throws BadRequestException {
 		logger.info("[START] - cancelPack() id: {}", id);

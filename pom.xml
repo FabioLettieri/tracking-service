@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.flsolution.mercadolivre</groupId>
     <artifactId>tracking-service</artifactId>
-    <version>1.4.0</version>
+    <version>1.5.0</version>
     <name>tracking-service</name>
     <description>Sistema de rastreamento de pacotes</description>
 
@@ -70,10 +70,19 @@
 		    <artifactId>spring-boot-starter-hateoas</artifactId>
 		</dependency>
 		
+        <!-- Spring Cache -->
 		<dependency>
 		    <groupId>org.springframework.boot</groupId>
 		    <artifactId>spring-boot-starter-cache</artifactId>
 		</dependency>
+		
+        <!-- Spring Doc -->
+		<dependency>
+		    <groupId>org.springdoc</groupId>
+		    <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+		    <version>2.7.0</version>
+		</dependency>
+
 
         <!-- Lombok -->
         <dependency>
