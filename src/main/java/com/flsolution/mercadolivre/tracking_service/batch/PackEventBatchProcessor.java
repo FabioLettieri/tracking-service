@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 import com.flsolution.mercadolivre.tracking_service.dtos.PackEventRequestDTO;
 import com.flsolution.mercadolivre.tracking_service.entities.PackEvent;
+import com.flsolution.mercadolivre.tracking_service.exceptions.PackNotFoundException;
 import com.flsolution.mercadolivre.tracking_service.repositories.PackEventRepository;
 import com.flsolution.mercadolivre.tracking_service.services.PackService;
 
@@ -58,21 +59,26 @@ public class PackEventBatchProcessor {
 
         for (PackEventRequestDTO requestDTO : events) {
             try {
-                PackEvent packEvent = new PackEvent(); 
+                PackEvent packEvent = new PackEvent();
                 packEvent.setPack(packService.getPackById(requestDTO.getPackId()));
                 packEvent.setLocation(requestDTO.getLocation());
                 packEvent.setDescription(requestDTO.getDescription());
                 packEvent.setEventDateTime(requestDTO.getEventDateTime());
 
                 packEvents.add(packEvent);
-            } catch (Exception e) {
-                logger.error("[FINISH] - saveBatch() - Falha ao processar evento: {}", e.getMessage(), e);
+            } catch (PackNotFoundException ex) {
+                logger.warn("[WARNING] - Pack com ID {} não encontrado, evento ignorado.", requestDTO.getPackId());
+                continue; 
+            } catch (Exception ex) {
+                logger.error("[ERROR] - Falha ao processar evento do pack ID {}: {}", requestDTO.getPackId(), ex.getMessage());
             }
         }
 
         if (!packEvents.isEmpty()) {
             packEventRepository.saveAll(packEvents);
             logger.info("[FINISH] - saveBatch() - {} eventos salvos no banco", packEvents.size());
+        } else {
+            logger.warn("[WARNING] - Nenhum evento válido foi salvo no batch.");
         }
     }
 }

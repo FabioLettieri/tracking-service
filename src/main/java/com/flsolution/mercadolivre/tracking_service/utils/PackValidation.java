@@ -5,6 +5,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
+import com.flsolution.mercadolivre.tracking_service.exceptions.CancelPackStatusCanceledException;
+import com.flsolution.mercadolivre.tracking_service.exceptions.CancelPackStatusDeliveredException;
+import com.flsolution.mercadolivre.tracking_service.exceptions.CancelPackStatusInTransitException;
 
 import lombok.AllArgsConstructor;
 
@@ -34,12 +37,18 @@ public class PackValidation {
 		
 		if (status == PackageStatus.IN_TRANSIT) {
 			logger.info("[FINISH] - validatePackElegibleForCancellation() WITH ERRORS");
-			throw new BadRequestException("The package is already on its way and cannot be canceled. Wait for delivery and refuse.");
+			throw new CancelPackStatusInTransitException("The package is already on its way and cannot be canceled. Wait for delivery and refuse.");
 		}
 
-		if (status == PackageStatus.CANCELLED) {
+		if (status == PackageStatus.CANCELLED || status == PackageStatus.CANCELED_DUE_TO_INACTIVITY) {
 			logger.info("[FINISH] - validatePackElegibleForCancellation() WITH ERRORS");
-			throw new BadRequestException("Package is already canceled, no action will be registered.");
+			throw new CancelPackStatusCanceledException("Package is already canceled, no action will be registered.");
+		}
+		
+		if (status == PackageStatus.DELIVERED) {
+			logger.info("[FINISH] - validatePackElegibleForCancellation() WITH ERRORS");
+			throw new CancelPackStatusDeliveredException("Action not carried out, since it has already been delivered.");
+			
 		}
 		
 		logger.info("[FINISH] - validatePackElegibleForCancellation()");

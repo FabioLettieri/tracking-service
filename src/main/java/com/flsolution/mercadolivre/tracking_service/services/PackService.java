@@ -10,9 +10,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.CacheControl;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.flsolution.mercadolivre.tracking_service.converters.PackConverter;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackCancelResponseDTO;
@@ -21,6 +19,7 @@ import com.flsolution.mercadolivre.tracking_service.dtos.PackResponseDTO;
 import com.flsolution.mercadolivre.tracking_service.entities.Pack;
 import com.flsolution.mercadolivre.tracking_service.entities.PackEvent;
 import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
+import com.flsolution.mercadolivre.tracking_service.exceptions.PackNotFoundException;
 import com.flsolution.mercadolivre.tracking_service.repositories.PackRepository;
 import com.flsolution.mercadolivre.tracking_service.services.impl.PackServiceImpl;
 import com.flsolution.mercadolivre.tracking_service.utils.PackValidation;
@@ -85,7 +84,7 @@ public class PackService implements PackServiceImpl {
 		logger.info("[START] - getPackById() id: {}", id);
 		
 		Pack response = packRepository.findById(id)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Pack not found."));
+				.orElseThrow(() -> new PackNotFoundException("Pack not found with id: " + id));
 
 		logger.info("[FINISH] - getPackById()");
 		return response;
