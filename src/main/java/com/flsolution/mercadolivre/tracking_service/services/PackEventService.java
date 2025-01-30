@@ -1,9 +1,13 @@
 package com.flsolution.mercadolivre.tracking_service.services;
 
+import java.util.concurrent.TimeUnit;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.CacheControl;
 import org.springframework.stereotype.Service;
 
 import com.flsolution.mercadolivre.tracking_service.converters.PackEventConverter;
@@ -29,6 +33,7 @@ public class PackEventService implements PackEventServiceImpl {
 	private final PackService packService;
 	
 	@Override
+	@Cacheable(value = "packsById", key = "#id")
 	public Page<PackEvent> findByPackId(Long id, Pageable pageable) {
 		logger.info("[START] - findPackById() id: {}", id);
 		
@@ -39,6 +44,7 @@ public class PackEventService implements PackEventServiceImpl {
 	}
 	
 	@Override
+	@Cacheable(value = "packs", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<PackEventDTO> getPackEvents(Pageable pageable) {
         logger.info("[START] - getPackEvents() sender: {}, pageable: {}", pageable);
 
@@ -63,6 +69,9 @@ public class PackEventService implements PackEventServiceImpl {
 		logger.info("[FINISH] - createPackEvent()");
 		return response;
 	}
-
-
+	
+	@Override
+    public CacheControl getCacheControl() {
+        return CacheControl.maxAge(5, TimeUnit.MINUTES);
+    }
 }

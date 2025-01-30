@@ -1,12 +1,15 @@
 package com.flsolution.mercadolivre.tracking_service.services;
 
 import java.time.LocalDateTime;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.coyote.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.CacheControl;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -75,21 +78,9 @@ public class PackService implements PackServiceImpl {
 	}
 
 
-	@Override
-	public PackResponseDTO getPackByIdAndIncludeEvents(Long id, Boolean includeEvents, Pageable pageable) {
-		logger.info("[START] - getPackById() id: {}, includeEvents: {}", id, includeEvents);
-		
-		Pack pack = getPackById(id);
-		
-		Page<PackEvent> events = includeEvents ? packEventHelperService.findByPackId(id, pageable) : Page.empty();
-		
-		PackResponseDTO response = PackConverter.listEventToResponseDTO(pack, events);
-		
-		logger.info("[FINISH] - getPackById()");
-		return response;
-	}
 
 	@Override
+	@Cacheable(value = "packsById", key = "#id")
 	public Pack getPackById(Long id) {
 		logger.info("[START] - getPackById() id: {}", id);
 		
@@ -116,6 +107,7 @@ public class PackService implements PackServiceImpl {
 	}
 		
 	@Override
+	@Cacheable(value = "packs", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
 	public Page<PackResponseDTO> getPacks(String sender, String recipient, Pageable pageable) {
 		logger.info("[START] - getPacks() pageable: {}", pageable);
 		Page<PackResponseDTO> response = packHelperService.getPackEvents(sender, recipient, pageable);
@@ -124,4 +116,21 @@ public class PackService implements PackServiceImpl {
 		return response;
 	}
 	
+	@Override
+	@Cacheable(value = "packsIncludeEvents", key = "#id + '-' + #includeEvents")
+    public PackResponseDTO getPackByIdAndIncludeEvents(Long id, Boolean includeEvents, Pageable pageable) {
+        Pack pack = getPackById(id);
+
+        Page<PackEvent> events = includeEvents ? packEventHelperService.findByPackId(id, pageable) : Page.empty();
+        
+        PackResponseDTO response = PackConverter.listEventToResponseDTO(pack, events);
+
+        return response;
+    }
+
+	@Override
+    public CacheControl getCacheControl() {
+        return CacheControl.maxAge(5, TimeUnit.MINUTES);
+    }
+    
 }

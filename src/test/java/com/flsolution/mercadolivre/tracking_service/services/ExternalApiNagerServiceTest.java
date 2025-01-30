@@ -33,17 +33,16 @@ class ExternalApiNagerServiceTest {
             .usingFilesUnderDirectory("wiremock"));
         wireMockServer.start();
 
-        String nagerDateUrl = wireMockServer.baseUrl();
-        
+
         RestTemplate restTemplate = new RestTemplateBuilder()
-            .rootUri(nagerDateUrl)
+            .rootUri(wireMockServer.baseUrl())
             .build();
 
-        externalApiNagerService = new ExternalApiNagerService(restTemplate);
-        
+        externalApiNagerService = new ExternalApiNagerService(restTemplate);	
+
         Field field = ExternalApiNagerService.class.getDeclaredField("nagerDateUrl");
         field.setAccessible(true);
-        field.set(externalApiNagerService, wireMockServer.baseUrl());
+        field.set(externalApiNagerService, "https://date.nager.at/api/v3/publicholidays");
     }
 
     @AfterEach
