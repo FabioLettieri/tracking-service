@@ -23,3 +23,6 @@ Voce pode subir a aplicação pelo Boot Dashboard do STS.
 Após subir voce poderá: 
  - Acessar o Swagger UI para visualizar e fazer testes dos endpoints expostos: http://localhost:8080/swagger-ui.html
  - Acessar o RabbitMQ Dashboard para conferir as filas que consomem enviando mensagens para criação e tambem para atualizar pedidos a muito tempo parados.
+
+
+Obs.: A Collection do postman está disponibilizada na pasta raiz do projeto, a Documentação solicitada tambem.
