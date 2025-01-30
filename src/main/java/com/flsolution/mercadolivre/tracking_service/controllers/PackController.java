@@ -46,6 +46,7 @@ public class PackController {
 	
 	@Operation(summary = "Criar um novo pacote", description = "Cria um novo pacote para rastreamento")
 	@ApiResponse(responseCode = "200", description = "Pacote criado com sucesso.", content = @Content(schema = @Schema(implementation = PackResponseDTO.class)))
+	@ApiResponse(responseCode = "400", description = "Pacote não foi criado por falta de parametros e/ou por parametros errados.")
 	@PostMapping
 	public ResponseEntity<PackResponseDTO> createPack(@RequestBody @Valid PackRequestDTO request) {
 		logger.info("[START] - createPack() request: {}", request);
@@ -58,6 +59,7 @@ public class PackController {
 	
 	@Operation(summary = "Atualizar status do pacote", description = "Atualiza o status de um pacote específico")
 	@ApiResponse(responseCode = "200", description = "Status atualizado com sucesso.", content = @Content(schema = @Schema(implementation = PackResponseDTO.class)))
+	@ApiResponse(responseCode = "400", description = "Status inválido.")
 	@PutMapping("/{id}/status")
 	public ResponseEntity<PackResponseDTO> updatePackStatus(@PathVariable Long id, @RequestBody @Valid UpdateStatusRequest request) {
 		logger.info("[START] - updatePackStatus() request: {}", request);

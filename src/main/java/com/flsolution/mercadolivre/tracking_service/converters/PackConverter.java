@@ -26,7 +26,6 @@ public class PackConverter {
 				.sender(request.getSender())
 				.recipient(request.getRecipient())
 				.isHolliday(request.getIsHolliday())
-				.funFact(request.getFunfact())
 				.estimatedDeliveryDate(request.getEstimatedDeliveryDate())
 				.status(PackageStatus.CREATED)
 				.build();

@@ -46,9 +46,11 @@ public class PackService implements PackServiceImpl {
 		request.setIsHolliday(isHolliday);
 		
 		String funFact = apiTheDogService.getFunFact();
-		request.setFunfact(funFact);
 		
-		Pack savedPack = packRepository.save(PackConverter.toEntity(request));
+		Pack pack = PackConverter.toEntity(request);
+		pack.setFunFact(funFact);
+				
+		Pack savedPack = packRepository.save(pack);
 
 		PackResponseDTO response = PackConverter.toResponseDTO(savedPack);
 		

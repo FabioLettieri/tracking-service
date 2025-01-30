@@ -18,8 +18,8 @@ public class CacheConfig {
     CacheManager cacheManager() {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager("packs", "packsById", "packsIncludeEvents");
         cacheManager.setCaffeine(Caffeine.newBuilder()
-                .maximumSize(500) 
-                .expireAfterWrite(5, TimeUnit.MINUTES) 
+                .maximumSize(50) 
+                .expireAfterWrite(1, TimeUnit.MINUTES) 
         );
         
         return cacheManager;

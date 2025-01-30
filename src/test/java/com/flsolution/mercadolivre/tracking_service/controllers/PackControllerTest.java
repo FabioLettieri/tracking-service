@@ -58,7 +58,6 @@ class PackControllerTest {
             "Loja ABC",
             "João Silva",
             true,
-            "fun fact",
             "24/10/2025"
         );
 
@@ -87,7 +86,6 @@ class PackControllerTest {
                 "Loja ABC",
                 "João Silva",
                 true,
-                "fun fact",
                 "24/10/2025"
             );
 

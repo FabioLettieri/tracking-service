@@ -10,6 +10,9 @@ spring:
       idle-timeout: 30000
       max-lifetime: 1800000
       connection-timeout: 20000
+      validation-timeout: 5000
+      keepalive-timeout: 30000
+      leak-detection-threshold: 2000
   jpa:
     properties:
       hibernate:
@@ -56,3 +59,11 @@ batch:
     interval-ms: 60000
     batch-size: 100
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "metrics,health"
+  metrics:
+    enable:
+      hikari: true

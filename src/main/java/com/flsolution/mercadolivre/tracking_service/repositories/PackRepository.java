@@ -22,10 +22,27 @@ public interface PackRepository extends JpaRepository<Pack, Long> {
 	        @Param("currentStatus") String currentStatus,
 	        @Param("newStatus") String newStatus);
 
-	Page<Pack> findBySenderAndRecipient(String sender, String recipient, Pageable pageable);
-	Page<Pack> findBySender(String sender, Pageable pageable);
-	Page<Pack> findByRecipient(String recipient, Pageable pageable);
-	Page<Pack> findAll(Pageable pageable);
+	@Query("SELECT p FROM Pack p WHERE p.sender = :sender AND p.recipient = :recipient")
+    Page<Pack> findBySenderAndRecipient(
+            @Param("sender") String sender, 
+            @Param("recipient") String recipient, 
+            Pageable pageable
+    );
+
+    @Query("SELECT p FROM Pack p WHERE p.sender = :sender")
+    Page<Pack> findBySender(
+            @Param("sender") String sender, 
+            Pageable pageable
+    );
+
+    @Query("SELECT p FROM Pack p WHERE p.recipient = :recipient")
+    Page<Pack> findByRecipient(
+            @Param("recipient") String recipient, 
+            Pageable pageable
+    );
+
+    @Query("SELECT p FROM Pack p")
+    Page<Pack> findAll(Pageable pageable);
 	
 
 
