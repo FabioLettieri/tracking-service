@@ -45,7 +45,7 @@ server:
   port: 8080
 
 external-apis:
-  nager-date-url: "https://date.nager.at/api/v3/publicholidays/2025/BR"
+  nager-date-url: "https://date.nager.at/api/v3/publicholidays"
   dog-api-url: "https://dogapi.dog/api/v2/facts?limit=1"
 
 batch:

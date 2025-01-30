@@ -39,7 +39,7 @@ public class PackService implements PackServiceImpl {
 	public PackResponseDTO createPack(PackRequestDTO request) {
 		logger.info("[START] - createPack() request: {}", request);
 		
-		Boolean isHolliday = apiNagerService.isHolliday(request.getEstimatedDeliveryDate());
+		Boolean isHolliday = apiNagerService.isHoliday(request.getEstimatedDeliveryDate());
 		request.setIsHolliday(isHolliday);
 		
 		String funFact = apiTheDogService.getFunFact();

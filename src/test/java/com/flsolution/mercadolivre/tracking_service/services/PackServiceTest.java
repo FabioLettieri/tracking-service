@@ -50,7 +50,7 @@ class PackServiceTest {
             "24/10/2025"
         );
 
-        when(apiNagerService.isHolliday("24/10/2025")).thenReturn(true);
+        when(apiNagerService.isHoliday("24/10/2025")).thenReturn(true);
         when(apiTheDogService.getFunFact()).thenReturn("Dogs are cool!");
         when(packRepository.save(any(Pack.class)))
             .thenReturn(new Pack("Livros para entrega", "Loja ABC", "João Silva", true, "Dogs are cool!", null, PackageStatus.CREATED));

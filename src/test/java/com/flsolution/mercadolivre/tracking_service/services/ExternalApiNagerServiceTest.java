@@ -54,7 +54,7 @@ class ExternalApiNagerServiceTest {
     @Test
     void testIsHolidayReturnsTrue() {
         String testDate = "2025-12-25";
-        Boolean result = externalApiNagerService.isHolliday(testDate);
+        Boolean result = externalApiNagerService.isHoliday(testDate);
 
         assertTrue(result);
     }
@@ -62,7 +62,7 @@ class ExternalApiNagerServiceTest {
     @Test
     void testIsHolidayReturnsFalse() {
         String testDate = "2025-12-26";
-        Boolean result = externalApiNagerService.isHolliday(testDate);
+        Boolean result = externalApiNagerService.isHoliday(testDate);
 
         assertFalse(result);
     }
@@ -70,7 +70,7 @@ class ExternalApiNagerServiceTest {
     @Test
     void testIsHolidayHandlesException() {
         String testDate = "2025-12-27";
-        Boolean result = externalApiNagerService.isHolliday(testDate);
+        Boolean result = externalApiNagerService.isHoliday(testDate);
 
         assertFalse(result);
     }

@@ -17,10 +17,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.flsolution.mercadolivre.tracking_service.dtos.PackCancelResponseDTO;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackEventRequestDTO;
+import com.flsolution.mercadolivre.tracking_service.dtos.PackRequestDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackResponseDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.updates.UpdateStatusRequest;
-import com.flsolution.mercadolivre.tracking_service.services.impl.PackEventProducerServiceImpl;
 import com.flsolution.mercadolivre.tracking_service.services.impl.PackServiceImpl;
 
 import jakarta.validation.Valid;
@@ -33,16 +32,15 @@ public class PackController {
 	private static final Logger logger = LoggerFactory.getLogger(PackController.class);
 	
 	private final PackServiceImpl packServiceImpl;
-	private final PackEventProducerServiceImpl packEventProducerServiceImpl;
 	
 	@PostMapping
-	public ResponseEntity<String> createPack(@RequestBody PackEventRequestDTO request) throws Exception {
+	public ResponseEntity<PackResponseDTO> createPack(@RequestBody PackRequestDTO request) throws Exception {
 		logger.info("[START] - createPack() request: {}", request);
 		
-		packEventProducerServiceImpl.sendPackEvent(request);
+		PackResponseDTO response = packServiceImpl.createPack(request);
 		
 		logger.info("[FINISH] - createPack()");
-		return ResponseEntity.ok("PackEvent enviado para processamento.");
+		return ResponseEntity.ok(response);
 	}
 	
 	@PutMapping("/{id}/status")

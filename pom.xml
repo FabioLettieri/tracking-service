@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.flsolution.mercadolivre</groupId>
     <artifactId>tracking-service</artifactId>
-    <version>1.0.1</version>
+    <version>1.0.2</version>
     <name>tracking-service</name>
     <description>Sistema de rastreamento de pacotes</description>
 
@@ -64,6 +64,12 @@
 			<artifactId>spring-boot-starter-batch</artifactId>
 		</dependency>
 
+        <!-- Spring Heteoas -->
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-hateoas</artifactId>
+		</dependency>
+
         <!-- Lombok -->
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -96,7 +102,6 @@
 		    <scope>test</scope>
 		</dependency>
 
-
         <!-- WireMock -->
 		<dependency>
 		    <groupId>org.wiremock</groupId>
@@ -124,8 +129,6 @@
 		    <groupId>com.fasterxml.jackson.core</groupId>
 		    <artifactId>jackson-databind</artifactId>
 		</dependency>
-
-
     </dependencies>
 
     <build>
