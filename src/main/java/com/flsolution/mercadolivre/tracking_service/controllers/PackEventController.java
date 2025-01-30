@@ -1,5 +1,7 @@
 package com.flsolution.mercadolivre.tracking_service.controllers;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Page;
@@ -76,6 +78,20 @@ public class PackEventController {
         logger.info("[FINISH] - createPackEvent()");
         return ResponseEntity.status(HttpStatus.CREATED).body("O Evento foi enviado para o processamento.");
     }
+
+	@Operation(summary = "Criar um novo evento do pacote", description = "Cria um novo evento com status de atualizações")
+	@ApiResponse(responseCode = "200", description = "PackEvent criado com sucesso.", content = @Content(schema = @Schema(implementation = PackEventRequestDTO.class)))
+	@ApiResponse(responseCode = "400", description = "PackEvent não foi criado por falta de parametros e/ou por parametros errados.")
+	@ApiResponse(responseCode = "404", description = "PackEvent não foi criado por ID informado errado.")
+	@PostMapping("/list")
+	public ResponseEntity<String> createListPackEvent(@RequestBody @Valid List<PackEventRequestDTO> requestDTO) throws Exception {
+		logger.info("[START] - createPackEvent()");
+		
+		packEventProducerServiceImpl.sendListPackEvent(requestDTO);
+		
+		logger.info("[FINISH] - createPackEvent()");
+		return ResponseEntity.status(HttpStatus.CREATED).body("O Evento foi enviado para o processamento.");
+	}
 	
 	
 }

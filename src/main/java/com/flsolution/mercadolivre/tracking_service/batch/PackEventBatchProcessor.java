@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,7 @@ import com.flsolution.mercadolivre.tracking_service.exceptions.PackNotFoundExcep
 import com.flsolution.mercadolivre.tracking_service.repositories.PackEventRepository;
 import com.flsolution.mercadolivre.tracking_service.services.PackService;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Component
@@ -31,6 +33,7 @@ public class PackEventBatchProcessor {
     @Value("${batch.tracking-events.batch-size}")
     private int batchSize;
 
+    @Async("taskExecutor")
     @Scheduled(fixedRateString = "${batch.tracking-events.interval-ms}")
     public void processBatch() {
         logger.info("[START] - processBatch() - Consumindo eventos da fila");
@@ -52,6 +55,7 @@ public class PackEventBatchProcessor {
         logger.info("[FINISH] - processBatch() - Processamento concluído");
     }
 
+    @Transactional
     private void saveBatch(List<PackEventRequestDTO> events) {
         logger.info("[START] - Salvando lote de {} eventos", events.size());
 

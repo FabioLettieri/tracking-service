@@ -74,7 +74,7 @@ public class RequestResponseLoggingFilter extends OncePerRequestFilter {
 	}
 	
 	String extractBody(byte[] content) {
-		logger.info("[START] - extractBody() content: {}", content);
+		logger.info("[START] - extractBody()");
 		if (content == null || content.length == 0) {
 			logger.info("[FINISH] - extractBody() WITH NULL");
 			return null;

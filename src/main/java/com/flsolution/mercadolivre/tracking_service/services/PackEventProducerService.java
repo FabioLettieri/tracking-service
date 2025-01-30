@@ -1,5 +1,7 @@
 package com.flsolution.mercadolivre.tracking_service.services;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -33,6 +35,19 @@ public class PackEventProducerService implements PackEventProducerServiceImpl {
         return "Message sent";
 
 		
+	}
+
+	@Override
+	public String sendListPackEvent(List<PackEventRequestDTO> requestDTO) {
+		requestDTO.forEach(request -> {
+			try {
+				sendPackEvent(request);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		});
+		
+		return "message sent";
 	}
 
 }

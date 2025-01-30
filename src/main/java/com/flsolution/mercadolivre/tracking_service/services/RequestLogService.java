@@ -20,7 +20,7 @@ public class RequestLogService implements RequestLogServiceImpl {
 	@Override
 	public RequestLog createLogRequest(RequestLog requestLog) throws Exception {
 		try {
-			logger.info("[START] - createLogRequest() requestLog: {}", requestLog);
+			logger.info("[START] - createLogRequest()");
 			
 			RequestLog response = requestLogRepository.save(requestLog);
 			
