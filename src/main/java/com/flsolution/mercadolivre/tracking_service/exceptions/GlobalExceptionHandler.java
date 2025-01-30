@@ -2,17 +2,20 @@ package com.flsolution.mercadolivre.tracking_service.exceptions;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.flsolution.mercadolivre.tracking_service.batch.ProcessorEventException;
 
 @RestControllerAdvice
@@ -104,6 +107,29 @@ public class GlobalExceptionHandler {
     	Map<String, String> error = Collections.singletonMap("error", ex.getMessage());
     	
     	return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+    
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Object> handleInvalidFormatException(HttpMessageNotReadableException ex) {
+        Throwable cause = ex.getCause();
+
+        if (cause instanceof InvalidFormatException invalidFormatException) {
+            String fieldName = invalidFormatException.getPath().get(0).getFieldName();
+            String invalidValue = invalidFormatException.getValue().toString();
+            
+            Map<String, Object> errorResponse = new LinkedHashMap<>();
+            errorResponse.put("status", HttpStatus.BAD_REQUEST.value());
+            errorResponse.put("error", "Invalid request format");
+            errorResponse.put("message", "O campo '" + fieldName + "' recebeu: " + invalidValue + ". Mas espera um tipo diferente, favor corrigir!");
+
+            return ResponseEntity.badRequest().body(errorResponse);
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of(
+            "status", HttpStatus.BAD_REQUEST.value(),
+            "error", "Invalid request format",
+            "message", "Erro ao processar a requisição."
+        ));
     }
 
 
