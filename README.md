@@ -5,8 +5,8 @@ Tecnologias Utilizadas:
  - Java 21
  - Spring Boot 3.4.2
  - Maven 3.9.9 (Versões inferiores podem funcionar, mas a recomendação é 3.8.0 ou superior)
- - Docker & Docker Compose
- - MySQL 8.0
+ - Docker Compose
+ - MySQL 8.0 com Flyway
  - RabbitMQ
  - WireMock (para mocks de APIs externas)
 
