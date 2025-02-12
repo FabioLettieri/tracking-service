@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,26 +26,25 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class PackEventService implements PackEventServiceImpl {
 
-	private static final Logger logger = LoggerFactory.getLogger(PackEventService.class);
-	
-	private final PackEventHelperService packEventHelperService;
-	
-	private final PackEventRepository packEventRepository;
-	private final PackService packService;
-	
-	@Override
-	@Cacheable(value = "packsById", key = "#id")
-	public Page<PackEvent> findByPackId(Long id, Pageable pageable) {
-		logger.info("[START] - findPackById() id: {}", id);
-		
-		Page<PackEvent> eventPacks = packEventHelperService.findByPackId(id, pageable);
+    private static final Logger logger = LoggerFactory.getLogger(PackEventService.class);
+    
+    private final PackEventHelperService packEventHelperService;
+    private final PackEventRepository packEventRepository;
+    private final PackService packService;
+    
+    @Override
+    @Cacheable(value = "packsById", key = "#id")
+    public Page<PackEvent> findByPackId(Long id, Pageable pageable) {
+        logger.info("[START] - findPackById() id: {}", id);
+        
+        Page<PackEvent> eventPacks = packEventHelperService.findByPackId(id, pageable);
 
-		logger.info("[FINISH] - findPackById()");
-		return eventPacks;
-	}
-	
-	@Override
-	@Cacheable(value = "packs", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
+        logger.info("[FINISH] - findPackById()");
+        return eventPacks;
+    }
+    
+    @Override
+    @Cacheable(value = "packs", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
     public Page<PackEventDTO> getPackEvents(Pageable pageable) {
         logger.info("[START] - getPackEvents() sender: {}, pageable: {}", pageable);
 
@@ -54,23 +54,24 @@ public class PackEventService implements PackEventServiceImpl {
         return response;
     }
 
-	@Override
-	@Transactional
-	public PackEventDTO createPackEvent(PackEventRequestDTO requestDTO) {
-		logger.info("[START] - createPackEvent() requestDTO: {}", requestDTO);
-		
-		Pack pack = packService.getPackById(requestDTO.getPackId());
-		PackEvent packEvent = PackEventConverter.toEntity(requestDTO, pack);
-		
-		PackEvent savedPackEvent = packEventRepository.save(packEvent);
-		
-		PackEventDTO response = PackEventConverter.toDTO(savedPackEvent);
-		
-		logger.info("[FINISH] - createPackEvent()");
-		return response;
-	}
-	
-	@Override
+    @Override
+    @Transactional
+    @CachePut(value = "packsById", key = "#requestDTO.packId")
+    public PackEventDTO createPackEvent(PackEventRequestDTO requestDTO) {
+        logger.info("[START] - createPackEvent() requestDTO: {}", requestDTO);
+        
+        Pack pack = packService.getPackById(requestDTO.getPackId());
+        PackEvent packEvent = PackEventConverter.toEntity(requestDTO, pack);
+        
+        PackEvent savedPackEvent = packEventRepository.save(packEvent);
+        
+        PackEventDTO response = PackEventConverter.toDTO(savedPackEvent);
+        
+        logger.info("[FINISH] - createPackEvent()");
+        return response;
+    }
+    
+    @Override
     public CacheControl getCacheControl() {
         return CacheControl.maxAge(5, TimeUnit.MINUTES);
     }

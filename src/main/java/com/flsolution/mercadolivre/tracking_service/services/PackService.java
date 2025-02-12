@@ -6,6 +6,8 @@ import java.util.concurrent.TimeUnit;
 import org.apache.coyote.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -37,13 +39,14 @@ public class PackService implements PackServiceImpl {
 	private final ExternalApiNagerService apiNagerService;
 	private final ExternalApiTheDogService apiTheDogService;
 	private final PackHelperService packHelperService;
-	
+
 	@Override
+	@CachePut(value = "packsById", key = "#result.id")
 	public PackResponseDTO createPack(PackRequestDTO request) {
 		logger.info("[START] - createPack() request: {}", request);
 		
-		Boolean isHolliday = apiNagerService.isHoliday(request.getEstimatedDeliveryDate());
-		request.setIsHolliday(isHolliday);
+		Boolean isHoliday = apiNagerService.isHoliday(request.getEstimatedDeliveryDate());
+		request.setIsHolliday(isHoliday);
 		
 		String funFact = apiTheDogService.getFunFact();
 		
@@ -54,11 +57,12 @@ public class PackService implements PackServiceImpl {
 
 		PackResponseDTO response = PackConverter.toResponseDTO(savedPack);
 		
-		logger.info("[FINISH] - createPack()");
+		logger.info("[FINISH] - createPack() id: {}", savedPack.getId());
 		return response;
 	}
 
 	@Override
+	@CachePut(value = "packsById", key = "#id")
 	public PackResponseDTO updateStatusPack(Long id, PackageStatus packageStatus) {
 		logger.info("[START] - updateStatusPack() id: {}, packageStatus: {}", id, packageStatus);
 
@@ -74,11 +78,9 @@ public class PackService implements PackServiceImpl {
 		Pack updatedPack = packRepository.save(pack);
 		PackResponseDTO response = PackConverter.toResponseDTO(updatedPack);
 		
-		logger.info("[FINISH] - updateStatusPack()");
+		logger.info("[FINISH] - updateStatusPack() id: {}", updatedPack.getId());
 		return response;
 	}
-
-
 
 	@Override
 	@Cacheable(value = "packsById", key = "#id")
@@ -88,13 +90,14 @@ public class PackService implements PackServiceImpl {
 		Pack response = packRepository.findById(id)
 				.orElseThrow(() -> new PackNotFoundException("Pack not found with id: " + id));
 
-		logger.info("[FINISH] - getPackById()");
+		logger.info("[FINISH] - getPackById() id: {}", id);
 		return response;
 	}
 
 	@Override
+	@CacheEvict(value = "packsById", key = "#id")
 	public PackCancelResponseDTO cancelPack(Long id) throws BadRequestException {
-		logger.info("[START] - cencelPack() id: {}", id);
+		logger.info("[START] - cancelPack() id: {}", id);
 
 		Pack pack = getPackById(id);
 		
@@ -103,12 +106,12 @@ public class PackService implements PackServiceImpl {
 		pack.setStatus(PackageStatus.CANCELLED);
 		PackCancelResponseDTO response = PackConverter.toCancelResponseDTO(packRepository.save(pack));
 		
-		logger.info("[FINISH] - cencelPack()");
+		logger.info("[FINISH] - cancelPack() id: {}", id);
 		return response;
 	}
 		
 	@Override
-	@Cacheable(value = "packs", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
+	@Cacheable(value = "packs", key = "#pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
 	public Page<PackResponseDTO> getPacks(String sender, String recipient, Pageable pageable) {
 		logger.info("[START] - getPacks() pageable: {}", pageable);
 		Page<PackResponseDTO> response = packHelperService.getPackEvents(sender, recipient, pageable);
@@ -116,22 +119,22 @@ public class PackService implements PackServiceImpl {
 		logger.info("[FINISH] - getPacks() total elements: {}, total pages: {}", response.getTotalElements(), response.getTotalPages());
 		return response;
 	}
-	
+
 	@Override
-	@Cacheable(value = "packsIncludeEvents", key = "#id + '-' + #includeEvents")
-    public PackResponseDTO getPackByIdAndIncludeEvents(Long id, Boolean includeEvents, Pageable pageable) {
-        Pack pack = getPackById(id);
+	@Cacheable(value = "packsIncludeEvents", key = "#id + '-' + #includeEvents + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
+	public PackResponseDTO getPackByIdAndIncludeEvents(Long id, Boolean includeEvents, Pageable pageable) {
+		logger.info("[START] - getPackByIdAndIncludeEvents() id: {}, includeEvents: {}", id, includeEvents);
+		
+		Pack pack = getPackById(id);
+		Page<PackEvent> events = includeEvents ? packEventHelperService.findByPackId(id, pageable) : Page.empty();
+		PackResponseDTO response = PackConverter.listEventToResponseDTO(pack, events);
 
-        Page<PackEvent> events = includeEvents ? packEventHelperService.findByPackId(id, pageable) : Page.empty();
-        
-        PackResponseDTO response = PackConverter.listEventToResponseDTO(pack, events);
-
-        return response;
-    }
+		logger.info("[FINISH] - getPackByIdAndIncludeEvents() id: {}", id);
+		return response;
+	}
 
 	@Override
     public CacheControl getCacheControl() {
         return CacheControl.maxAge(5, TimeUnit.MINUTES);
     }
-    
 }
