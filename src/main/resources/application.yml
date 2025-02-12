@@ -33,11 +33,18 @@ spring:
     scheduling:
       enabled: true
 
-  cache:
-    type: caffeine
-
   main:
     allow-bean-definition-overriding: true
+
+  cache:
+    type: redis
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 60000
+
 
 flyway:
   enabled: true

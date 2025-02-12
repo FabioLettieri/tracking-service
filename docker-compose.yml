@@ -41,9 +41,21 @@ services:
       - ./wiremock:/home/wiremock
     command: --verbose --global-response-templating
 
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - app-network
+    volumes:
+      - redis-data:/data
+    command: ["redis-server", "--appendonly", "yes"]
+
 networks:
   app-network:
     driver: bridge
 
 volumes:
   db-data:
+  redis-data:
