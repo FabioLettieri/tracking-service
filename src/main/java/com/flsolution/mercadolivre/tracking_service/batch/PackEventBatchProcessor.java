@@ -64,17 +64,17 @@ public class PackEventBatchProcessor {
         for (PackEventRequestDTO requestDTO : events) {
             try {
                 PackEvent packEvent = new PackEvent();
-                packEvent.setPack(packService.getPackById(requestDTO.getPackId()));
-                packEvent.setLocation(requestDTO.getLocation());
-                packEvent.setDescription(requestDTO.getDescription());
-                packEvent.setEventDateTime(requestDTO.getEventDateTime());
+                packEvent.setPack(packService.getPackById(requestDTO.packId()));
+                packEvent.setLocation(requestDTO.location());
+                packEvent.setDescription(requestDTO.description());
+                packEvent.setEventDateTime(requestDTO.eventDateTime());
 
                 packEvents.add(packEvent);
             } catch (PackNotFoundException ex) {
-                logger.warn("[WARNING] - Pack com ID {} não encontrado, evento ignorado.", requestDTO.getPackId());
+                logger.warn("[WARNING] - Pack com ID {} não encontrado, evento ignorado.", requestDTO.packId());
                 continue; 
             } catch (Exception ex) {
-                logger.error("[ERROR] - Falha ao processar evento do pack ID {}: {}", requestDTO.getPackId(), ex.getMessage());
+                logger.error("[ERROR] - Falha ao processar evento do pack ID {}: {}", requestDTO.packId(), ex.getMessage());
             }
         }
 

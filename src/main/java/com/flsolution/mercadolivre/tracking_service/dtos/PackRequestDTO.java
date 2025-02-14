@@ -32,5 +32,11 @@ public class PackRequestDTO {
     @Schema(description = "Data estimada de entrega no formato yyyy-MM-dd", example = "2025-01-01")
     @NotNull(message = "estimatedDeliveryDate is mandatory")
     private String estimatedDeliveryDate;
+
+    @Schema(description = "Id do cliente criador do pedido", example = "1")
+    @NotNull(message = "customerId is mandatory")
+    private Long customerId;
+    
+    
 	
 }

@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +25,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.flsolution.mercadolivre.tracking_service.dtos.PackEventDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackRequestDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackResponseDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.updates.UpdateStatusRequest;
@@ -66,10 +68,19 @@ class PackControllerTest {
 	@Test
 	void testCreatePackSuccessfully() throws Exception {
 		PackRequestDTO requestDTO = new PackRequestDTO("Livros para entrega", "Loja ABC", "João Silva", true,
-				"24/10/2025");
+				"24/10/2025", 1L);
 
-		PackResponseDTO responseDTO = new PackResponseDTO(1L, "Livros para entrega", "Loja ABC", "João Silva",
-				PackageStatus.CREATED, LocalDateTime.now(), LocalDateTime.now());
+		PackResponseDTO responseDTO = PackResponseDTO.builder()
+	     		   .createdAt(LocalDateTime.now())
+	     		   .deliveredAt(LocalDateTime.now())
+	     		   .description("Livros para entrega")
+	     		   .events(new ArrayList<PackEventDTO>())
+	     		   .id(1L)
+	     		   .recipient(null)
+	     		   .sender(null)
+	     		   .status(PackageStatus.CREATED)
+	     		   .updatedAt(LocalDateTime.now())
+  		   .build();
 
 		lenient().when(packService.createPack(any(PackRequestDTO.class))).thenReturn(responseDTO);
 
@@ -80,7 +91,7 @@ class PackControllerTest {
 	@Test
 	void testCreatePackWithValidRequest() throws Exception {
 		PackRequestDTO requestDTO = new PackRequestDTO("Livros para entrega", "Loja ABC", "João Silva", true,
-				"24/10/2025");
+				"24/10/2025", 1L);
 
 		mockMvc.perform(post("/api/v1/packs").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(requestDTO))).andExpect(status().isOk());
@@ -100,8 +111,17 @@ class PackControllerTest {
 		UpdateStatusRequest updateStatusRequest = new UpdateStatusRequest();
 		updateStatusRequest.setStatus(PackageStatus.IN_TRANSIT);
 
-		PackResponseDTO responseDTO = new PackResponseDTO(packId, "Livros para entrega", "Loja ABC", "João Silva",
-				PackageStatus.IN_TRANSIT, LocalDateTime.now().minusDays(1), LocalDateTime.now());
+		PackResponseDTO responseDTO = PackResponseDTO.builder()
+	     		   .createdAt(LocalDateTime.now())
+	     		   .deliveredAt(LocalDateTime.now())
+	     		   .description("Livros para entrega")
+	     		   .events(new ArrayList<PackEventDTO>())
+	     		   .id(1L)
+	     		   .recipient(null)
+	     		   .sender(null)
+	     		   .status(PackageStatus.CREATED)
+	     		   .updatedAt(LocalDateTime.now())
+  		   .build();
 
 		lenient().when(packService.updateStatusPack(eq(packId), eq(PackageStatus.IN_TRANSIT))).thenReturn(responseDTO);
 
@@ -113,8 +133,17 @@ class PackControllerTest {
 	void testUpdateStatusPackWithInvalidTransition() throws Exception {
 		Long packId = 1L;
 
-		PackResponseDTO responseDTO = new PackResponseDTO(packId, "Livros para entrega", "Loja ABC", "João Silva",
-				PackageStatus.CREATED, LocalDateTime.now().minusDays(1), LocalDateTime.now());
+		PackResponseDTO responseDTO = PackResponseDTO.builder()
+	     		   .createdAt(LocalDateTime.now())
+	     		   .deliveredAt(LocalDateTime.now())
+	     		   .description("Livros para entrega")
+	     		   .events(new ArrayList<PackEventDTO>())
+	     		   .id(1L)
+	     		   .recipient(null)
+	     		   .sender(null)
+	     		   .status(PackageStatus.CREATED)
+	     		   .updatedAt(LocalDateTime.now())
+  		   .build();
 
 		lenient().when(packService.updateStatusPack(eq(packId), eq(PackageStatus.DELIVERED))).thenReturn(responseDTO);
 

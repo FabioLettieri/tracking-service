@@ -1,6 +1,7 @@
 package com.flsolution.mercadolivre.tracking_service.services;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.coyote.BadRequestException;
@@ -18,9 +19,11 @@ import com.flsolution.mercadolivre.tracking_service.converters.PackConverter;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackCancelResponseDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackRequestDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackResponseDTO;
+import com.flsolution.mercadolivre.tracking_service.entities.Customer;
 import com.flsolution.mercadolivre.tracking_service.entities.Pack;
 import com.flsolution.mercadolivre.tracking_service.entities.PackEvent;
 import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
+import com.flsolution.mercadolivre.tracking_service.exceptions.CustomerNotFoundException;
 import com.flsolution.mercadolivre.tracking_service.exceptions.PackNotFoundException;
 import com.flsolution.mercadolivre.tracking_service.repositories.PackRepository;
 import com.flsolution.mercadolivre.tracking_service.services.impl.PackServiceImpl;
@@ -39,26 +42,42 @@ public class PackService implements PackServiceImpl {
 	private final ExternalApiNagerService apiNagerService;
 	private final ExternalApiTheDogService apiTheDogService;
 	private final PackHelperService packHelperService;
+	private final CustomerService customerRepository;
 
 	@Override
 	@CachePut(value = "packsById", key = "#result.id")
-	public PackResponseDTO createPack(PackRequestDTO request) {
+	public PackResponseDTO createPack(PackRequestDTO request) throws CustomerNotFoundException {
 		logger.info("[START] - createPack() request: {}", request);
 		
-		Boolean isHoliday = apiNagerService.isHoliday(request.getEstimatedDeliveryDate());
-		request.setIsHolliday(isHoliday);
-		
-		String funFact = apiTheDogService.getFunFact();
-		
-		Pack pack = PackConverter.toEntity(request);
-		pack.setFunFact(funFact);
-				
-		Pack savedPack = packRepository.save(pack);
+	    Optional<Pack> existingPack = packRepository.findByClientRequestId(request.getCustomerId());
+	    if (existingPack.isPresent()) {
+	        logger.warn("Duplicate request detected. Discarding duplicate Pack creation for clientRequestId: {}", request.getCustomerId());
+	        return PackConverter.toResponseDTO(existingPack.get());
+	    }
 
-		PackResponseDTO response = PackConverter.toResponseDTO(savedPack);
-		
-		logger.info("[FINISH] - createPack() id: {}", savedPack.getId());
-		return response;
+	    try {
+	    	Customer customer = customerRepository.findById(request.getCustomerId());
+	    	
+	    	Boolean isHoliday = apiNagerService.isHoliday(request.getEstimatedDeliveryDate());
+			request.setIsHolliday(isHoliday);
+			request.setCustomerId(customer.getId());
+
+			String funFact = apiTheDogService.getFunFact();
+			
+			Pack pack = PackConverter.toEntity(request);
+			pack.setCustomer(customer);
+			pack.setFunFact(funFact);
+					
+			Pack savedPack = packRepository.save(pack);
+
+			PackResponseDTO response = PackConverter.toResponseDTO(savedPack);
+			
+			logger.info("[FINISH] - createPack() id: {}", savedPack.getId());
+			return response;
+	    } catch (CustomerNotFoundException ex) {
+	    	logger.error("[FINISH] - createPack() WITH ERRORS ex: {}", ex.getMessage());
+	    	throw new CustomerNotFoundException("");
+	    }
 	}
 
 	@Override

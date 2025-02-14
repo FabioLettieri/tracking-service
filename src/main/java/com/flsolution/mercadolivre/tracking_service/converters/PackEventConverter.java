@@ -23,8 +23,8 @@ public class PackEventConverter {
 	public static PackEvent toEntity(PackEventRequestDTO requestDTO, Pack pack) {
 		return PackEvent.builder()
 				.pack(pack)
-				.location(requestDTO.getLocation())
-				.description(requestDTO.getDescription())
+				.location(requestDTO.location())
+				.description(requestDTO.description())
 				.eventDateTime(LocalDateTime.now())
 				.build();
 	}

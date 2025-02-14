@@ -1,6 +1,7 @@
 package com.flsolution.mercadolivre.tracking_service.repositories;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -43,6 +44,8 @@ public interface PackRepository extends JpaRepository<Pack, Long> {
 
     @Query("SELECT p FROM Pack p")
     Page<Pack> findAll(Pageable pageable);
+
+	Optional<Pack> findByClientRequestId(Long customerId);
 	
 
 

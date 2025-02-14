@@ -93,17 +93,16 @@ class GlobalExceptionHandlerTest {
         assertEquals("Pacote já entregue", response.getBody().get("error"));
     }
 
-    // ✅ Teste para erro de formato inválido (HttpMessageNotReadableException)
     @Test
     void testHandleInvalidFormatException() {
-        // Criando uma exceção simulada com um campo inválido
         List<Reference> path = new LinkedList<>();
         path.add(new Reference(null, "campoInvalido"));
 
         InvalidFormatException invalidFormatException = new InvalidFormatException(null, "Valor inválido", "123", String.class);
         invalidFormatException.prependPath(path.get(0));
 
-        HttpMessageNotReadableException ex = new HttpMessageNotReadableException("Erro de formatação", invalidFormatException);
+        @SuppressWarnings("deprecation")
+		HttpMessageNotReadableException ex = new HttpMessageNotReadableException("Erro de formatação", invalidFormatException);
 
         ResponseEntity<Object> response = exceptionHandler.handleInvalidFormatException(ex);
 
@@ -112,10 +111,10 @@ class GlobalExceptionHandlerTest {
         assertEquals("O campo 'campoInvalido' recebeu: 123. Mas espera um tipo diferente, favor corrigir!", ((Map<?, ?>) response.getBody()).get("message"));
     }
 
-    // ✅ Teste para erro genérico de formatação inválida (quando não há campo específico)
     @Test
     void testHandleInvalidFormatException_generic() {
-        HttpMessageNotReadableException ex = new HttpMessageNotReadableException("Erro genérico");
+        @SuppressWarnings("deprecation")
+		HttpMessageNotReadableException ex = new HttpMessageNotReadableException("Erro genérico");
 
         ResponseEntity<Object> response = exceptionHandler.handleInvalidFormatException(ex);
 

@@ -11,6 +11,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -36,7 +38,8 @@ public class Pack extends EntityBase {
 			Boolean isHolliday, 
 			String funFact,
 			String estimatedDeliveryDate, 
-			PackageStatus status) {
+			PackageStatus status,
+			Customer customer) {
 		
 		this.description = description;
 		this.sender = sender;
@@ -45,6 +48,7 @@ public class Pack extends EntityBase {
 		this.funFact = funFact;
 		this.estimatedDeliveryDate = estimatedDeliveryDate;
 		this.status = status;
+		this.customer = customer;
 	}
 
 	private static final long serialVersionUID = 7447140689941622598L;
@@ -74,5 +78,9 @@ public class Pack extends EntityBase {
 	
 	@OneToMany(mappedBy = "pack", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<PackEvent> events;
+	
+	@ManyToOne
+	@JoinColumn(name = "customer_id", nullable = false)
+	private Customer customer;
 	
 }

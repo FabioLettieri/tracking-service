@@ -27,7 +27,7 @@ public class ExternalApiTheDogService implements ExternalApiTheDogServiceImpl {
 			logger.info("[START] - getFunFact()");
 			
 			DogApiResponseDTO responseDogApi = restTemplate.getForObject(dogApiUrl, DogApiResponseDTO.class);
-            String response = responseDogApi.getData().get(0).getAttributes().getBody();
+            String response = responseDogApi.data().get(0).attributes().body();
 			
 			logger.info("[FINISH] - getFunFact()");
 			return response;

@@ -2,11 +2,6 @@ package com.flsolution.mercadolivre.tracking_service.dtos;
 
 import java.util.List;
 
-import lombok.Getter;
-import lombok.Setter;
+public record DogApiResponseDTO (List<DogFactDataDTO> data) {
 
-@Getter
-@Setter
-public class DogApiResponseDTO {
-    private List<DogFactDataDTO> data;
 }

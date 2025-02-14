@@ -60,7 +60,7 @@ public class PackEventService implements PackEventServiceImpl {
     public PackEventDTO createPackEvent(PackEventRequestDTO requestDTO) {
         logger.info("[START] - createPackEvent() requestDTO: {}", requestDTO);
         
-        Pack pack = packService.getPackById(requestDTO.getPackId());
+        Pack pack = packService.getPackById(requestDTO.packId());
         PackEvent packEvent = PackEventConverter.toEntity(requestDTO, pack);
         
         PackEvent savedPackEvent = packEventRepository.save(packEvent);

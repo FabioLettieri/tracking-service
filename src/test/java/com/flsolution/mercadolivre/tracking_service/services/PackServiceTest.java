@@ -11,6 +11,8 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,11 +29,14 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.CacheControl;
 
 import com.flsolution.mercadolivre.tracking_service.dtos.PackCancelResponseDTO;
+import com.flsolution.mercadolivre.tracking_service.dtos.PackEventDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackRequestDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackResponseDTO;
+import com.flsolution.mercadolivre.tracking_service.entities.Customer;
 import com.flsolution.mercadolivre.tracking_service.entities.Pack;
 import com.flsolution.mercadolivre.tracking_service.entities.PackEvent;
 import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
+import com.flsolution.mercadolivre.tracking_service.exceptions.CustomerNotFoundException;
 import com.flsolution.mercadolivre.tracking_service.exceptions.PackNotFoundException;
 import com.flsolution.mercadolivre.tracking_service.repositories.PackRepository;
 import com.flsolution.mercadolivre.tracking_service.utils.PackValidation;
@@ -58,26 +63,42 @@ class PackServiceTest {
     @Mock
     private PackHelperService packHelperService;
     
+    @Mock
+    private CustomerService customerService;
+    
     @Test
-    void testShouldCreatePackSuccessfully() {
+    void testShouldCreatePackSuccessfully() throws CustomerNotFoundException {
         PackRequestDTO requestDTO = new PackRequestDTO(
             "Livros para entrega",
             "Loja ABC",
             "João Silva",
             true,
-            "24/10/2025"
+            "24/10/2025",
+            1L
         );
+        
+		Customer customer = Customer.builder()
+        		.address("Rua da amora")
+        		.document("12365478900")
+        		.email("customer@email.com")
+        		.name("customer 01")
+        		.packs(new ArrayList<Pack>())
+        		.phoneNumber("11912345678")
+        		.build();
+        customer.setId(1L);
+        
 
+        when(customerService.findById(any())).thenReturn(customer);
         when(apiNagerService.isHoliday("24/10/2025")).thenReturn(true);
         when(apiTheDogService.getFunFact()).thenReturn("Dogs are cool!");
         when(packRepository.save(any(Pack.class)))
-            .thenReturn(new Pack("Livros para entrega", "Loja ABC", "João Silva", true, "Dogs are cool!", null, PackageStatus.CREATED));
+            .thenReturn(new Pack("Livros para entrega", "Loja ABC", "João Silva", true, "Dogs are cool!", null, PackageStatus.CREATED, customer));
 
         PackResponseDTO result = packService.createPack(requestDTO);
 
         assertNotNull(result);
-        assertEquals("Livros para entrega", result.getDescription());
-        assertEquals("Loja ABC", result.getSender());
+        assertEquals("Livros para entrega", result.description());
+        assertEquals("Loja ABC", result.sender());
     }
     
     @Test
@@ -91,7 +112,7 @@ class PackServiceTest {
 
         PackResponseDTO result = packService.updateStatusPack(1L, PackageStatus.IN_TRANSIT);
 
-        assertEquals(PackageStatus.IN_TRANSIT, result.getStatus());
+        assertEquals(PackageStatus.IN_TRANSIT, result.status());
         verify(packRepository, times(1)).save(pack);
     }
     
@@ -117,7 +138,7 @@ class PackServiceTest {
         PackResponseDTO result = packService.updateStatusPack(1L, PackageStatus.IN_TRANSIT);
 
         assertNotNull(result);
-        assertEquals(PackageStatus.IN_TRANSIT, result.getStatus());
+        assertEquals(PackageStatus.IN_TRANSIT, result.status());
         verify(packRepository, times(1)).save(any(Pack.class));
     }
 
@@ -133,8 +154,8 @@ class PackServiceTest {
         PackResponseDTO result = packService.updateStatusPack(1L, PackageStatus.DELIVERED);
 
         assertNotNull(result);
-        assertEquals(PackageStatus.DELIVERED, result.getStatus());
-        assertNotNull(result.getDeliveredAt());
+        assertEquals(PackageStatus.DELIVERED, result.status());
+        assertNotNull(result.deliveredAt());
         verify(packRepository, times(1)).save(any(Pack.class));
     }
 
@@ -153,10 +174,10 @@ class PackServiceTest {
         PackResponseDTO result = packService.updateStatusPack(1L, PackageStatus.IN_TRANSIT);
 
         assertNotNull(result);
-        assertEquals("Pacote de teste", result.getDescription());
-        assertEquals("Loja ABC", result.getSender());
-        assertEquals("João Silva", result.getRecipient());
-        assertEquals(PackageStatus.IN_TRANSIT, result.getStatus());
+        assertEquals("Pacote de teste", result.description());
+        assertEquals("Loja ABC", result.sender());
+        assertEquals("João Silva", result.recipient());
+        assertEquals(PackageStatus.IN_TRANSIT, result.status());
         verify(packRepository, times(1)).save(any(Pack.class));
     }
     
@@ -176,8 +197,8 @@ class PackServiceTest {
         PackResponseDTO result = packService.getPackByIdAndIncludeEvents(1L, true, pageable);
 
         assertNotNull(result);
-        assertEquals(2, result.getEvents().size());
-        assertEquals(PackageStatus.IN_TRANSIT, result.getStatus());
+        assertEquals(2, result.events().size());
+        assertEquals(PackageStatus.IN_TRANSIT, result.status());
     }
 
     @Test
@@ -194,7 +215,29 @@ class PackServiceTest {
     @Test
     void testGetPacks_whenCalled_thenReturnPaginatedList() {
         Pageable pageable = PageRequest.of(0, 10);
-        List<PackResponseDTO> packList = List.of(new PackResponseDTO(), new PackResponseDTO());
+        List<PackResponseDTO> packList = List.of(PackResponseDTO.builder()
+	     		   .createdAt(LocalDateTime.now())
+	     		   .deliveredAt(LocalDateTime.now())
+	     		   .description("Livros para entrega")
+	     		   .events(new ArrayList<PackEventDTO>())
+	     		   .id(1L)
+	     		   .recipient(null)
+	     		   .sender(null)
+	     		   .status(PackageStatus.CREATED)
+	     		   .updatedAt(LocalDateTime.now())
+     		   .build(), 
+     		   PackResponseDTO.builder()
+	    		   .createdAt(LocalDateTime.now())
+	    		   .deliveredAt(LocalDateTime.now())
+	    		   .description("Cadernos para entrega")
+	    		   .events(new ArrayList<PackEventDTO>())
+	    		   .id(2L)
+	    		   .recipient(null)
+	    		   .sender(null)
+	    		   .status(PackageStatus.CREATED)
+	    		   .updatedAt(LocalDateTime.now())
+    		   .build()
+        		);
         Page<PackResponseDTO> packPage = new PageImpl<>(packList, pageable, packList.size());
 
         when(packHelperService.getPackEvents(any(), any(), any())).thenReturn(packPage);

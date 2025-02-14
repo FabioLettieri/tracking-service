@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -54,10 +55,7 @@ class PackEventServiceTest {
         pack.setId(id);
         return pack;
     }
-
-    /** 
-     * Teste para o método findByPackId 
-     */
+    
     @Test
     void testFindByPackId_whenValidId_thenReturnEvents() {
         Long packId = 1L;
@@ -95,15 +93,24 @@ class PackEventServiceTest {
         assertEquals(0, result.getTotalElements());
     }
 
-    /** 
-     * Teste para o método getPackEvents 
-     */
     @Test
     void testGetPackEvents_whenEventsExist_thenReturnDTOs() {
-        PackEventDTO dto1 = new PackEventDTO();
-        dto1.setPackId(1L);
-        PackEventDTO dto2 = new PackEventDTO();
-        dto2.setPackId(2L);
+    	PackEventDTO dto1 = PackEventDTO.builder()
+    			.description("Event 1")
+    			.eventDateTime(LocalDateTime.now())
+    			.id(1L)
+    			.location("Location 1")
+    			.packId(1L)
+    			.build();
+    	
+        PackEventDTO dto2 = PackEventDTO.builder()
+    			.description("Event 2")
+    			.eventDateTime(LocalDateTime.now())
+    			.id(2L)
+    			.location("Location 2")
+    			.packId(2L)
+    			.build();
+        
         Page<PackEventDTO> dtoPage = new PageImpl<>(List.of(dto1, dto2), pageable, 2);
 
         when(packEventHelperService.getPackEvents(pageable)).thenReturn(dtoPage);
@@ -126,10 +133,8 @@ class PackEventServiceTest {
 
     @Test
     void testCreatePackEvent_whenPackNotFound_thenThrowException() {
-        PackEventRequestDTO requestDTO = new PackEventRequestDTO();
-        requestDTO.setPackId(99L);
-
-        when(packService.getPackById(requestDTO.getPackId())).thenThrow(new RuntimeException("Pack not found"));
+        PackEventRequestDTO requestDTO = new PackEventRequestDTO(null, null, null, null);
+        when(packService.getPackById(requestDTO.packId())).thenThrow(new RuntimeException("Pack not found"));
 
         Exception exception = assertThrows(RuntimeException.class, () -> packEventService.createPackEvent(requestDTO));
 
@@ -139,20 +144,22 @@ class PackEventServiceTest {
     @Test
     void testCreatePackEvent_whenSaveFails_thenThrowException() {
         Pack pack = createPack(1L);
-        PackEventRequestDTO requestDTO = new PackEventRequestDTO();
-        requestDTO.setPackId(1L);
+        PackEventRequestDTO requestDTO = PackEventRequestDTO.builder()
+        		.description("Event 1")
+        		.eventDateTime(LocalDateTime.now())
+        		.location("Location 1")
+        		.packId(1L)
+        		.build();
 
-        when(packService.getPackById(requestDTO.getPackId())).thenReturn(pack);
-        when(packEventRepository.save(any(PackEvent.class))).thenThrow(new RuntimeException("Database error"));
+        when(packService.getPackById(requestDTO.packId())).thenReturn(pack);
+        when(packEventRepository.save(any())).thenThrow(new RuntimeException("Database error"));
 
         Exception exception = assertThrows(RuntimeException.class, () -> packEventService.createPackEvent(requestDTO));
 
         assertEquals("Database error", exception.getMessage());
+    
     }
-
-    /** 
-     * Teste para o método getCacheControl 
-     */
+ 
     @Test
     void testGetCacheControl_shouldReturnCorrectCacheDuration() {
         CacheControl cacheControl = packEventService.getCacheControl();

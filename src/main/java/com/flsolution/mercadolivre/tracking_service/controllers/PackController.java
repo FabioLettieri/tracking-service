@@ -22,6 +22,7 @@ import com.flsolution.mercadolivre.tracking_service.dtos.PackCancelResponseDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackRequestDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackResponseDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.updates.UpdateStatusRequest;
+import com.flsolution.mercadolivre.tracking_service.exceptions.CustomerNotFoundException;
 import com.flsolution.mercadolivre.tracking_service.services.ETagService;
 import com.flsolution.mercadolivre.tracking_service.services.impl.PackServiceImpl;
 
@@ -48,7 +49,7 @@ public class PackController {
 	@ApiResponse(responseCode = "200", description = "Pacote criado com sucesso.", content = @Content(schema = @Schema(implementation = PackResponseDTO.class)))
 	@ApiResponse(responseCode = "400", description = "Pacote não foi criado por falta de parametros e/ou por parametros errados.")
 	@PostMapping
-	public ResponseEntity<PackResponseDTO> createPack(@RequestBody @Valid PackRequestDTO request) {
+	public ResponseEntity<PackResponseDTO> createPack(@RequestBody @Valid PackRequestDTO request) throws CustomerNotFoundException {
 		logger.info("[START] - createPack() request: {}", request);
 		
 		PackResponseDTO response = packServiceImpl.createPack(request);

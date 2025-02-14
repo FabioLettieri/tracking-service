@@ -38,7 +38,7 @@ public class ExternalApiNagerService implements ExternalApiNagerServiceImpl {
             List<HolidayRequestDTO> holidayList = Arrays.asList(holidays);
 
             boolean isHoliday = holidayList.stream()
-                    .anyMatch(holiday -> LocalDate.parse(holiday.getDate()).equals(localDate));
+                    .anyMatch(holiday -> LocalDate.parse(holiday.date()).equals(localDate));
 
             logger.info("[FINISH] - isHoliday() result: {}", isHoliday);
             return isHoliday;

@@ -6,6 +6,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -19,8 +21,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com.flsolution.mercadolivre.tracking_service.converters.PackConverter;
+import com.flsolution.mercadolivre.tracking_service.dtos.PackEventDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackResponseDTO;
 import com.flsolution.mercadolivre.tracking_service.entities.Pack;
+import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
 import com.flsolution.mercadolivre.tracking_service.repositories.PackRepository;
 
 @ExtendWith(MockitoExtension.class)
@@ -57,8 +61,18 @@ class PackHelperServiceTest {
 
         try (var mockedConverter = mockStatic(PackConverter.class)) {
             mockedConverter.when(() -> PackConverter.toResponseDTO(any(Pack.class)))
-                           .thenAnswer(invocation -> new PackResponseDTO());
-
+                           .thenAnswer(invocation -> PackResponseDTO.builder()
+                        		   .createdAt(LocalDateTime.now())
+                        		   .deliveredAt(LocalDateTime.now())
+                        		   .description("Livros para entrega")
+                        		   .events(new ArrayList<PackEventDTO>())
+                        		   .id(1L)
+                        		   .recipient(recipient)
+                        		   .sender(sender)
+                        		   .status(PackageStatus.CREATED)
+                        		   .updatedAt(LocalDateTime.now())
+                        		   .build()
+                        		   );
             Page<PackResponseDTO> result = packHelperService.getPackEvents(sender, recipient, pageable);
 
             assertNotNull(result);
@@ -80,7 +94,17 @@ class PackHelperServiceTest {
 
         try (var mockedConverter = mockStatic(PackConverter.class)) {
             mockedConverter.when(() -> PackConverter.toResponseDTO(any(Pack.class)))
-                           .thenAnswer(invocation -> new PackResponseDTO());
+                           .thenAnswer(invocation -> PackResponseDTO.builder()
+                        		   .createdAt(LocalDateTime.now())
+                        		   .deliveredAt(LocalDateTime.now())
+                        		   .description("Livros para entrega")
+                        		   .events(new ArrayList<PackEventDTO>())
+                        		   .id(1L)
+                        		   .recipient(null)
+                        		   .sender(sender)
+                        		   .status(PackageStatus.CREATED)
+                        		   .updatedAt(LocalDateTime.now())
+                        		   .build());
 
             Page<PackResponseDTO> result = packHelperService.getPackEvents(sender, null, pageable);
 
@@ -103,7 +127,17 @@ class PackHelperServiceTest {
 
         try (var mockedConverter = mockStatic(PackConverter.class)) {
             mockedConverter.when(() -> PackConverter.toResponseDTO(any(Pack.class)))
-                           .thenAnswer(invocation -> new PackResponseDTO());
+                           .thenAnswer(invocation -> PackResponseDTO.builder()
+                        		   .createdAt(LocalDateTime.now())
+                        		   .deliveredAt(LocalDateTime.now())
+                        		   .description("Livros para entrega")
+                        		   .events(new ArrayList<PackEventDTO>())
+                        		   .id(1L)
+                        		   .recipient(recipient)
+                        		   .sender(null)
+                        		   .status(PackageStatus.CREATED)
+                        		   .updatedAt(LocalDateTime.now())
+                        		   .build());
 
             Page<PackResponseDTO> result = packHelperService.getPackEvents(null, recipient, pageable);
 
@@ -124,7 +158,17 @@ class PackHelperServiceTest {
 
         try (var mockedConverter = mockStatic(PackConverter.class)) {
             mockedConverter.when(() -> PackConverter.toResponseDTO(any(Pack.class)))
-                           .thenAnswer(invocation -> new PackResponseDTO());
+                           .thenAnswer(invocation -> PackResponseDTO.builder()
+                        		   .createdAt(LocalDateTime.now())
+                        		   .deliveredAt(LocalDateTime.now())
+                        		   .description("Livros para entrega")
+                        		   .events(new ArrayList<PackEventDTO>())
+                        		   .id(1L)
+                        		   .recipient(null)
+                        		   .sender(null)
+                        		   .status(PackageStatus.CREATED)
+                        		   .updatedAt(LocalDateTime.now())
+                        		   .build());
 
             Page<PackResponseDTO> result = packHelperService.getPackEvents(null, null, pageable);
 

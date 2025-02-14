@@ -39,6 +39,4 @@ public abstract class EntityBase implements Serializable {
 	protected void onUpdate() {
 		this.updatedAt = LocalDateTime.now();
 	}
-	
-	
 }

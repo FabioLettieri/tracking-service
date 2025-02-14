@@ -51,7 +51,7 @@ class PackEventControllerTest {
 
     @Test
     void testCreatePackEvent_whenValidationFails_thenReturnBadRequest() throws Exception {
-        PackEventRequestDTO invalidRequestDTO = new PackEventRequestDTO();
+        PackEventRequestDTO invalidRequestDTO = new PackEventRequestDTO(null, null, null, null);
 
         mockMvc.perform(post("/api/v1/pack-events")
                 .contentType(MediaType.APPLICATION_JSON)

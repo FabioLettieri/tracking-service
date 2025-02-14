@@ -1,5 +1,6 @@
 package com.flsolution.mercadolivre.tracking_service.converters;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,19 +37,17 @@ public class PackConverter {
 	
 	public static PackResponseDTO toResponseDTO(Pack pack) {
 		logger.info("[START] - toResponseDTO() pack: {}", pack);
-		PackResponseDTO response = new PackResponseDTO(
-				pack.getId(),
-				pack.getDescription(),
-				pack.getSender(),
-				pack.getRecipient(),
-				pack.getStatus(),
-				pack.getCreatedAt(),
-				pack.getUpdatedAt());
-		
-		if (pack.getDeliveredAt() != null) {
-	        response.setDeliveredAt(pack.getDeliveredAt());
-	    }
-		
+		PackResponseDTO response = PackResponseDTO.builder()
+				.createdAt(pack.getCreatedAt())
+				.deliveredAt(pack.getDeliveredAt() != null ? pack.getDeliveredAt() : null)
+				.description(pack.getDescription())
+				.events(pack.getEvents() != null ? pack.getEvents().stream().map(PackEventConverter::toDTO).collect(Collectors.toList()) : new ArrayList<PackEventDTO>())
+				.id(pack.getId())
+				.recipient(pack.getRecipient())
+				.sender(pack.getSender())
+				.status(pack.getStatus())
+				.updatedAt(pack.getUpdatedAt())
+				.build();
 		
 		logger.info("[FINISH] - toResponseDTO()");
 		return response;
@@ -95,16 +94,10 @@ public class PackConverter {
 	}
 
 	public static Page<PackResponseDTO> toListPackResponseDTO(Page<Pack> packs) {
-		Page<PackResponseDTO> responseDTOs = packs.map(event -> new PackResponseDTO(
-                		event.getId(),
-                        event.getDescription(),
-                        event.getSender(),
-                        event.getRecipient(),
-                        event.getStatus(),
-                        event.getCreatedAt(),
-                        event.getUpdatedAt()
-                ));
+		logger.info("[START] - toListPackResponseDTO() packs: {}", packs);
+		Page<PackResponseDTO> responseDTOs = packs.map(event -> toResponseDTO(event));
 		
+		logger.info("[FINISH] - toListPackResponseDTO()");
 		return responseDTOs;
 	}
 

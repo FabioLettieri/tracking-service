@@ -10,6 +10,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -34,10 +35,12 @@ class PackEventProducerServiceTest {
 
     @Test
     void testSendPackEvent_whenValidRequest_thenSendMessageSuccessfully() throws Exception {
-        PackEventRequestDTO requestDTO = new PackEventRequestDTO();
-        requestDTO.setPackId(1L);
-        requestDTO.setLocation("Centro de Distribuição");
-        requestDTO.setDescription("Pacote chegou ao centro de distribuição");
+        PackEventRequestDTO requestDTO = PackEventRequestDTO.builder()
+        		.description("Pacote chegou ao centro de distribuição")
+        		.eventDateTime(LocalDateTime.now())
+        		.location("Location 1")
+        		.packId(1L)
+        		.build();
 
         String result = packEventProducerService.sendPackEvent(requestDTO);
 
@@ -51,11 +54,14 @@ class PackEventProducerServiceTest {
 
     @Test
     void testSendPackEvent_whenExceptionOccurs_thenThrowException() {
-        PackEventRequestDTO requestDTO = new PackEventRequestDTO();
-        requestDTO.setPackId(2L);
-        requestDTO.setLocation("Em rota");
-        requestDTO.setDescription("Pacote saiu para entrega");
-
+    	
+    	PackEventRequestDTO requestDTO = PackEventRequestDTO.builder()
+        		.description("Pacote saiu para entrega")
+        		.eventDateTime(LocalDateTime.now())
+        		.location("Em rota")
+        		.packId(2L)
+        		.build();
+    	
         doThrow(new RuntimeException("Falha ao enviar mensagem")).when(rabbitTemplate)
             .convertAndSend(eq(RabbitMQConfig.TRACKING_EVENTS_EXCHANGE), eq(RabbitMQConfig.TRACKING_EVENTS_ROUTING_KEY), any(PackEventRequestDTO.class));
 
@@ -67,15 +73,19 @@ class PackEventProducerServiceTest {
 
     @Test
     void testSendListPackEvent_whenValidRequests_thenSendAllMessages() {
-        PackEventRequestDTO request1 = new PackEventRequestDTO();
-        request1.setPackId(1L);
-        request1.setLocation("Centro de Distribuição");
-        request1.setDescription("Pacote chegou ao centro de distribuição");
+        PackEventRequestDTO request1 = PackEventRequestDTO.builder()
+        		.description("Pacote chegou ao centro de distribuição")
+        		.eventDateTime(LocalDateTime.now())
+        		.location("Location 1")
+        		.packId(1L)
+        		.build();
 
-        PackEventRequestDTO request2 = new PackEventRequestDTO();
-        request2.setPackId(2L);
-        request2.setLocation("Em rota");
-        request2.setDescription("Pacote saiu para entrega");
+        PackEventRequestDTO request2 = PackEventRequestDTO.builder()
+        		.description("Pacote saiu para entrega")
+        		.eventDateTime(LocalDateTime.now())
+        		.location("Em rota")
+        		.packId(2L)
+        		.build();
 
         List<PackEventRequestDTO> requests = Arrays.asList(request1, request2);
 
@@ -85,21 +95,25 @@ class PackEventProducerServiceTest {
         verify(rabbitTemplate, times(2)).convertAndSend(
             eq(RabbitMQConfig.TRACKING_EVENTS_EXCHANGE),
             eq(RabbitMQConfig.TRACKING_EVENTS_ROUTING_KEY),
-            any(PackEventRequestDTO.class) // Resolvendo a ambiguidade
+            any(PackEventRequestDTO.class)
         );
     }
 
     @Test
     void testSendListPackEvent_whenOneMessageFails_thenContinueSendingOthers() {
-        PackEventRequestDTO request1 = new PackEventRequestDTO();
-        request1.setPackId(1L);
-        request1.setLocation("Centro de Distribuição");
-        request1.setDescription("Pacote chegou ao centro de distribuição");
+    	PackEventRequestDTO request1 = PackEventRequestDTO.builder()
+        		.description("Pacote chegou ao centro de distribuição")
+        		.eventDateTime(LocalDateTime.now())
+        		.location("Location 1")
+        		.packId(1L)
+        		.build();
 
-        PackEventRequestDTO request2 = new PackEventRequestDTO();
-        request2.setPackId(2L);
-        request2.setLocation("Em rota");
-        request2.setDescription("Pacote saiu para entrega");
+        PackEventRequestDTO request2 = PackEventRequestDTO.builder()
+        		.description("Pacote saiu para entrega")
+        		.eventDateTime(LocalDateTime.now())
+        		.location("Em rota")
+        		.packId(2L)
+        		.build();
 
         List<PackEventRequestDTO> requests = Arrays.asList(request1, request2);
 
