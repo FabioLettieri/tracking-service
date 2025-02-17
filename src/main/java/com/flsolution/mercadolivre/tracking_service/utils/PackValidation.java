@@ -17,7 +17,11 @@ import com.flsolution.mercadolivre.tracking_service.exceptions.PackStatusInvalid
 
 public class PackValidation {
 
+	private static final String FINISH_WITH_ERRORS_STATUS_TRANSITION = "[FINISH] - validateStatusTransition() WITH ERRORS";
+	private static final String FINISH_WITH_ERRORS_ELEGIBLE_FOR_CANCELLATION = "[FINISH] - validatePackElegibleForCancellation() WITH ERRORS";
+	
 	private static final Logger logger = LoggerFactory.getLogger(PackValidation.class);
+	
 	private static final Map<PackageStatus, Set<PackageStatus>> validTransitions = new HashMap<PackageStatus, Set<PackageStatus>>();
 	private static final EnumSet<PackageStatus> invalidTransitions = EnumSet.of(PackageStatus.IN_TRANSIT,
 			PackageStatus.CANCELLED, PackageStatus.CANCELED_DUE_TO_INACTIVITY, PackageStatus.DELIVERED);
@@ -33,14 +37,14 @@ public class PackValidation {
 				packageStatus);
 
 		if (currentStatus == packageStatus) {
-			logger.info("[FINISH] - validateStatusTransition() WITH ERRORS");
+			logger.info(FINISH_WITH_ERRORS_STATUS_TRANSITION);
 			throw new PackStatusInvalidException(
 					"Transitions are not allowed when the status current and update are the same.");
 		}
 
 		var validNextStatus = validTransitions.getOrDefault(packageStatus, Set.of());
 		if (!validNextStatus.contains(packageStatus)) {
-			logger.info("[FINISH] - validateStatusTransition() WITH ERRORS");
+			logger.info(FINISH_WITH_ERRORS_STATUS_TRANSITION);
 			throw new PackStatusInvalidException(
 					String.format("Invalid transition from %s to %s", currentStatus, packageStatus));
 		}
@@ -52,19 +56,19 @@ public class PackValidation {
         logger.info("[START] - validatePackElegibleForCancellation() status: {}", status);
 
         if (status == PackageStatus.IN_TRANSIT) {
-            logger.info("[FINISH] - validatePackElegibleForCancellation() WITH ERRORS");
+            logger.info(FINISH_WITH_ERRORS_ELEGIBLE_FOR_CANCELLATION);
             throw new CancelPackStatusInTransitException("The package is already on its way and cannot be canceled. Wait for delivery and refuse.");
         }
 
         if (invalidTransitions.contains(status)) {
             if (status == PackageStatus.IN_TRANSIT) {
-                logger.info("[FINISH] - validatePackElegibleForCancellation() WITH ERRORS");
+                logger.info(FINISH_WITH_ERRORS_ELEGIBLE_FOR_CANCELLATION);
                 throw new CancelPackStatusInTransitException("The package is already on its way and cannot be canceled. Wait for delivery and refuse.");
             } else if (status == PackageStatus.CANCELLED || status == PackageStatus.CANCELED_DUE_TO_INACTIVITY) {
-                logger.info("[FINISH] - validatePackElegibleForCancellation() WITH ERRORS");
+                logger.info(FINISH_WITH_ERRORS_ELEGIBLE_FOR_CANCELLATION);
                 throw new CancelPackStatusCanceledException("Package is already canceled, no action will be registered.");
             } else if (status == PackageStatus.DELIVERED) {
-                logger.info("[FINISH] - validatePackElegibleForCancellation() WITH ERRORS");
+                logger.info(FINISH_WITH_ERRORS_ELEGIBLE_FOR_CANCELLATION);
                 throw new CancelPackStatusDeliveredException("Action not carried out, since it has already been delivered.");
             }
         }
