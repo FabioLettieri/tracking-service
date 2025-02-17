@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.flsolution.mercadolivre.tracking_service.batch.ProcessorEventException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -109,6 +108,9 @@ public class GlobalExceptionHandler {
     	return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
     
+    /**
+     * Handle errors and return a 400 Bad Request with detailed messages.
+     */
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<Object> handleInvalidFormatException(HttpMessageNotReadableException ex) {
         Throwable cause = ex.getCause();
@@ -130,6 +132,30 @@ public class GlobalExceptionHandler {
             "error", "Invalid request format",
             "message", "Erro ao processar a requisição."
         ));
+    }
+    
+    /**
+     * Handle errors and return a 404 Not Found with detailed messages.
+     */
+    @ExceptionHandler(CustomerNotFoundException.class)
+    public ResponseEntity<Map<String, String>> handleCustomerNotFoundException(CustomerNotFoundException ex) {
+    	logger.error("[ERROR] - Customer not found: {}", ex.getMessage());
+    	
+    	Map<String, String> error = Collections.singletonMap("error", ex.getMessage());
+    	
+    	return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    /**
+     * Handle errors and return a 400 Bad Request with detailed messages.
+     */
+    @ExceptionHandler(CustomerExistsWithDocumentOrEmailException.class)
+    public ResponseEntity<Map<String, String>> handleCustomerExistsWithDocumentOrEmailException(CustomerExistsWithDocumentOrEmailException ex) {
+    	logger.error("[ERROR] - Customer already exists with document and/or email: {}", ex.getMessage());
+    	
+    	Map<String, String> error = Collections.singletonMap("error", ex.getMessage());
+    	
+    	return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
 

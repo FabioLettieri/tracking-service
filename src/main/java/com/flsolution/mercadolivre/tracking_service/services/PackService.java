@@ -1,4 +1,4 @@
-package com.flsolution.mercadolivre.tracking_service.services;
+ package com.flsolution.mercadolivre.tracking_service.services;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -49,7 +49,7 @@ public class PackService implements PackServiceImpl {
 	public PackResponseDTO createPack(PackRequestDTO request) throws CustomerNotFoundException {
 		logger.info("[START] - createPack() request: {}", request);
 		
-	    Optional<Pack> existingPack = packRepository.findByClientRequestId(request.getCustomerId());
+	    Optional<Pack> existingPack = packRepository.findByCustomerId(request.getCustomerId());
 	    if (existingPack.isPresent()) {
 	        logger.warn("Duplicate request detected. Discarding duplicate Pack creation for clientRequestId: {}", request.getCustomerId());
 	        return PackConverter.toResponseDTO(existingPack.get());

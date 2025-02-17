@@ -45,7 +45,7 @@ public interface PackRepository extends JpaRepository<Pack, Long> {
     @Query("SELECT p FROM Pack p")
     Page<Pack> findAll(Pageable pageable);
 
-	Optional<Pack> findByClientRequestId(Long customerId);
+	Optional<Pack> findByCustomerId(Long customerId);
 	
 
 

@@ -15,7 +15,6 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 
 import com.fasterxml.jackson.databind.JsonMappingException.Reference;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.flsolution.mercadolivre.tracking_service.batch.ProcessorEventException;
 
 class GlobalExceptionHandlerTest {
 
