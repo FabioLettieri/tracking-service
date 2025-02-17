@@ -1,5 +1,6 @@
 package com.flsolution.mercadolivre.tracking_service.batch;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -67,7 +68,7 @@ public class PackEventBatchProcessor {
                 packEvent.setPack(packService.getPackById(requestDTO.packId()));
                 packEvent.setLocation(requestDTO.location());
                 packEvent.setDescription(requestDTO.description());
-                packEvent.setEventDateTime(requestDTO.eventDateTime());
+                packEvent.setEventDateTime(LocalDateTime.now());
 
                 packEvents.add(packEvent);
             } catch (PackNotFoundException ex) {

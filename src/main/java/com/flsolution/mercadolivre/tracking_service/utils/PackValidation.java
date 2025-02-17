@@ -39,23 +39,20 @@ public class PackValidation {
 	}
 
 	public static void validateStatusTransition(PackageStatus currentStatus, PackageStatus packageStatus) {
-		logger.info("[START] - validateStatusTransition() currentStatus: {}, packageStatus: {}", currentStatus,
-				packageStatus);
+		logger.info("[START] - validateStatusTransition() currentStatus: {}, packageStatus: {}", currentStatus, packageStatus);
 
-		if (currentStatus == packageStatus) {
-			logger.info(FINISH_WITH_ERRORS_STATUS_TRANSITION);
-			throw new PackStatusInvalidException(
-					"Transitions are not allowed when the status current and update are the same.");
-		}
+	    if (currentStatus == packageStatus) {
+	        logger.info(FINISH_WITH_ERRORS_STATUS_TRANSITION);
+	        throw new PackStatusInvalidException("Transitions are not allowed when the status current and update are the same.");
+	    }
 
-		var validNextStatus = validTransitions.getOrDefault(packageStatus, Set.of());
-		if (!validNextStatus.contains(packageStatus)) {
-			logger.info(FINISH_WITH_ERRORS_STATUS_TRANSITION);
-			throw new PackStatusInvalidException(
-					String.format("Invalid transition from %s to %s", currentStatus, packageStatus));
-		}
+	    var validNextStatus = validTransitions.getOrDefault(currentStatus, Set.of());
+	    if (!validNextStatus.contains(packageStatus)) {
+	        logger.info(FINISH_WITH_ERRORS_STATUS_TRANSITION);
+	        throw new PackStatusInvalidException(String.format("Invalid transition from %s to %s", currentStatus, packageStatus));
+	    }
 
-		logger.info("[FINISH] - validateStatusTransition()");
+	    logger.info("[FINISH] - validateStatusTransition()");
 	}
 
 	public static void validatePackElegibleForCancellation(PackageStatus status) throws BadRequestException {
