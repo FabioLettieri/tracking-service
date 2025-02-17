@@ -18,7 +18,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com.flsolution.mercadolivre.tracking_service.converters.PackEventConverter;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackEventDTO;
+import com.flsolution.mercadolivre.tracking_service.dtos.response.PackEventResponse;
 import com.flsolution.mercadolivre.tracking_service.entities.Pack;
 import com.flsolution.mercadolivre.tracking_service.entities.PackEvent;
 import com.flsolution.mercadolivre.tracking_service.repositories.PackEventRepository;
@@ -100,7 +100,7 @@ class PackEventHelperServiceTest {
 
         when(packEventRepository.findAll(pageable)).thenReturn(Page.empty());
 
-        Page<PackEventDTO> result = packEventHelperService.getPackEvents(pageable);
+        Page<PackEventResponse> result = packEventHelperService.getPackEvents(pageable);
 
         assertNotNull(result);
         assertEquals(0, result.getTotalElements());
@@ -116,7 +116,7 @@ class PackEventHelperServiceTest {
 
         when(packEventRepository.findAll(pageable)).thenReturn(page);
 
-        Page<PackEventDTO> result = packEventHelperService.getPackEvents(pageable);
+        Page<PackEventResponse> result = packEventHelperService.getPackEvents(pageable);
 
         assertNotNull(result);
         assertEquals(1, result.getTotalElements());

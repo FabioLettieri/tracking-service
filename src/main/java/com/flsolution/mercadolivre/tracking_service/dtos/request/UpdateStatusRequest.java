@@ -1,4 +1,4 @@
-package com.flsolution.mercadolivre.tracking_service.dtos.updates;
+package com.flsolution.mercadolivre.tracking_service.dtos.request;
 
 import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
 

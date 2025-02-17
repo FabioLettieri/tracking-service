@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.flsolution.mercadolivre.tracking_service.dtos.DogApiResponseDTO;
+import com.flsolution.mercadolivre.tracking_service.dtos.response.DogApiResponse;
 import com.flsolution.mercadolivre.tracking_service.services.impl.ExternalApiTheDogServiceImpl;
 
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class ExternalApiTheDogService implements ExternalApiTheDogServiceImpl {
 		try {
 			logger.info("[START] - getFunFact()");
 			
-			DogApiResponseDTO responseDogApi = restTemplate.getForObject(dogApiUrl, DogApiResponseDTO.class);
+			DogApiResponse responseDogApi = restTemplate.getForObject(dogApiUrl, DogApiResponse.class);
             String response = responseDogApi.data().get(0).attributes().body();
 			
 			logger.info("[FINISH] - getFunFact()");

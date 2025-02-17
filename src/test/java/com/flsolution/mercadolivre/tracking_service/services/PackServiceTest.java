@@ -27,10 +27,10 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
-import com.flsolution.mercadolivre.tracking_service.dtos.PackCancelResponseDTO;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackEventDTO;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackRequestDTO;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackResponseDTO;
+import com.flsolution.mercadolivre.tracking_service.dtos.request.PackRequest;
+import com.flsolution.mercadolivre.tracking_service.dtos.response.PackCancelResponse;
+import com.flsolution.mercadolivre.tracking_service.dtos.response.PackEventResponse;
+import com.flsolution.mercadolivre.tracking_service.dtos.response.PackResponse;
 import com.flsolution.mercadolivre.tracking_service.entities.Customer;
 import com.flsolution.mercadolivre.tracking_service.entities.Pack;
 import com.flsolution.mercadolivre.tracking_service.entities.PackEvent;
@@ -68,7 +68,7 @@ class PackServiceTest {
     
     @Test
     void testShouldCreatePackSuccessfully() throws CustomerNotFoundException, PackCreateDuplicateDetected {
-        PackRequestDTO requestDTO = new PackRequestDTO(
+        PackRequest requestDTO = new PackRequest(
             "Livros para entrega",
             "Loja ABC",
             "João Silva",
@@ -94,7 +94,7 @@ class PackServiceTest {
         when(packRepository.save(any(Pack.class)))
             .thenReturn(new Pack("Livros para entrega", "Loja ABC", "João Silva", true, "Dogs are cool!", null, PackageStatus.CREATED, customer));
 
-        PackResponseDTO result = packService.createPack(requestDTO);
+        PackResponse result = packService.createPack(requestDTO);
 
         assertNotNull(result);
         assertEquals("Livros para entrega", result.description());
@@ -110,7 +110,7 @@ class PackServiceTest {
         when(packRepository.findById(1L)).thenReturn(Optional.of(pack));
         when(packRepository.save(any())).thenReturn(pack);
 
-        PackResponseDTO result = packService.updateStatusPack(1L, PackageStatus.IN_TRANSIT);
+        PackResponse result = packService.updateStatusPack(1L, PackageStatus.IN_TRANSIT);
 
         assertEquals(PackageStatus.IN_TRANSIT, result.status());
         verify(packRepository, times(1)).save(pack);
@@ -135,7 +135,7 @@ class PackServiceTest {
         when(packRepository.findById(1L)).thenReturn(Optional.of(pack));
         when(packRepository.save(any(Pack.class))).thenReturn(pack);
 
-        PackResponseDTO result = packService.updateStatusPack(1L, PackageStatus.IN_TRANSIT);
+        PackResponse result = packService.updateStatusPack(1L, PackageStatus.IN_TRANSIT);
 
         assertNotNull(result);
         assertEquals(PackageStatus.IN_TRANSIT, result.status());
@@ -151,7 +151,7 @@ class PackServiceTest {
         when(packRepository.findById(1L)).thenReturn(Optional.of(pack));
         when(packRepository.save(any(Pack.class))).thenReturn(pack);
 
-        PackResponseDTO result = packService.updateStatusPack(1L, PackageStatus.DELIVERED);
+        PackResponse result = packService.updateStatusPack(1L, PackageStatus.DELIVERED);
 
         assertNotNull(result);
         assertEquals(PackageStatus.DELIVERED, result.status());
@@ -171,7 +171,7 @@ class PackServiceTest {
         when(packRepository.findById(1L)).thenReturn(Optional.of(pack));
         when(packRepository.save(any(Pack.class))).thenReturn(pack);
 
-        PackResponseDTO result = packService.updateStatusPack(1L, PackageStatus.IN_TRANSIT);
+        PackResponse result = packService.updateStatusPack(1L, PackageStatus.IN_TRANSIT);
 
         assertNotNull(result);
         assertEquals("Pacote de teste", result.description());
@@ -194,7 +194,7 @@ class PackServiceTest {
         when(packRepository.findById(1L)).thenReturn(Optional.of(pack));
         when(packEventHelperService.findByPackId(1L, pageable)).thenReturn(eventsPage);
 
-        PackResponseDTO result = packService.getPackByIdAndIncludeEvents(1L, true, pageable);
+        PackResponse result = packService.getPackByIdAndIncludeEvents(1L, true, pageable);
 
         assertNotNull(result);
         assertEquals(2, result.events().size());
@@ -215,22 +215,22 @@ class PackServiceTest {
     @Test
     void testGetPacks_whenCalled_thenReturnPaginatedList() {
         Pageable pageable = PageRequest.of(0, 10);
-        List<PackResponseDTO> packList = List.of(PackResponseDTO.builder()
+        List<PackResponse> packList = List.of(PackResponse.builder()
 	     		   .createdAt(LocalDateTime.now())
 	     		   .deliveredAt(LocalDateTime.now())
 	     		   .description("Livros para entrega")
-	     		   .events(new ArrayList<PackEventDTO>())
+	     		   .events(new ArrayList<PackEventResponse>())
 	     		   .id(1L)
 	     		   .recipient(null)
 	     		   .sender(null)
 	     		   .status(PackageStatus.CREATED)
 	     		   .updatedAt(LocalDateTime.now())
      		   .build(), 
-     		   PackResponseDTO.builder()
+     		   PackResponse.builder()
 	    		   .createdAt(LocalDateTime.now())
 	    		   .deliveredAt(LocalDateTime.now())
 	    		   .description("Cadernos para entrega")
-	    		   .events(new ArrayList<PackEventDTO>())
+	    		   .events(new ArrayList<PackEventResponse>())
 	    		   .id(2L)
 	    		   .recipient(null)
 	    		   .sender(null)
@@ -238,11 +238,11 @@ class PackServiceTest {
 	    		   .updatedAt(LocalDateTime.now())
     		   .build()
         		);
-        Page<PackResponseDTO> packPage = new PageImpl<>(packList, pageable, packList.size());
+        Page<PackResponse> packPage = new PageImpl<>(packList, pageable, packList.size());
 
         when(packHelperService.getPackEvents(any(), any(), any())).thenReturn(packPage);
 
-        Page<PackResponseDTO> result = packService.getPacks("Loja ABC", "João Silva", pageable);
+        Page<PackResponse> result = packService.getPacks("Loja ABC", "João Silva", pageable);
 
         assertNotNull(result);
         assertEquals(2, result.getTotalElements());
@@ -252,11 +252,11 @@ class PackServiceTest {
     @Test
     void testGetPacks_whenNoResults_thenReturnEmptyPage() {
         Pageable pageable = PageRequest.of(0, 10);
-        Page<PackResponseDTO> emptyPage = Page.empty(pageable);
+        Page<PackResponse> emptyPage = Page.empty(pageable);
 
         when(packHelperService.getPackEvents(any(), any(), any())).thenReturn(emptyPage);
 
-        Page<PackResponseDTO> result = packService.getPacks("Loja XYZ", "Maria Souza", pageable);
+        Page<PackResponse> result = packService.getPacks("Loja XYZ", "Maria Souza", pageable);
 
         assertNotNull(result);
         assertTrue(result.isEmpty());
@@ -271,7 +271,7 @@ class PackServiceTest {
         when(packRepository.findById(1L)).thenReturn(Optional.of(pack));
         when(packRepository.save(any())).thenReturn(pack);
 
-        PackCancelResponseDTO result = packService.cancelPack(1L);
+        PackCancelResponse result = packService.cancelPack(1L);
 
         assertNotNull(result);
         assertEquals(PackageStatus.CANCELLED, pack.getStatus());

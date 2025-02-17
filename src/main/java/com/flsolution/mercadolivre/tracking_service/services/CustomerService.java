@@ -10,8 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.flsolution.mercadolivre.tracking_service.converters.CustomerConverter;
-import com.flsolution.mercadolivre.tracking_service.dtos.CustomerRequest;
-import com.flsolution.mercadolivre.tracking_service.dtos.CustomerResponse;
+import com.flsolution.mercadolivre.tracking_service.dtos.request.CustomerRequest;
+import com.flsolution.mercadolivre.tracking_service.dtos.response.CustomerResponse;
 import com.flsolution.mercadolivre.tracking_service.entities.Customer;
 import com.flsolution.mercadolivre.tracking_service.entities.Pack;
 import com.flsolution.mercadolivre.tracking_service.exceptions.CustomerNotFoundException;

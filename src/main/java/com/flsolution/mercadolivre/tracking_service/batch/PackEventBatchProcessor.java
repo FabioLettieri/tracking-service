@@ -12,7 +12,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.flsolution.mercadolivre.tracking_service.dtos.PackEventRequestDTO;
+import com.flsolution.mercadolivre.tracking_service.dtos.request.PackEventRequest;
 import com.flsolution.mercadolivre.tracking_service.entities.PackEvent;
 import com.flsolution.mercadolivre.tracking_service.exceptions.PackNotFoundException;
 import com.flsolution.mercadolivre.tracking_service.repositories.PackEventRepository;
@@ -39,10 +39,10 @@ public class PackEventBatchProcessor {
     public void processBatch() {
         logger.info("[START] - processBatch() - Consumindo eventos da fila");
 
-        List<PackEventRequestDTO> events = new ArrayList<>();
+        List<PackEventRequest> events = new ArrayList<>();
 
         while (events.size() < batchSize) {
-            PackEventRequestDTO event = (PackEventRequestDTO) rabbitTemplate.receiveAndConvert("tracking-events-queue");
+            PackEventRequest event = (PackEventRequest) rabbitTemplate.receiveAndConvert("tracking-events-queue");
             if (event == null) break;
 
             logger.info("[RECEIVED] processBatch() event: {}", event);
@@ -57,12 +57,12 @@ public class PackEventBatchProcessor {
     }
 
     @Transactional
-    private void saveBatch(List<PackEventRequestDTO> events) {
+    private void saveBatch(List<PackEventRequest> events) {
         logger.info("[START] - Salvando lote de {} eventos", events.size());
 
         List<PackEvent> packEvents = new ArrayList<>();
 
-        for (PackEventRequestDTO requestDTO : events) {
+        for (PackEventRequest requestDTO : events) {
             try {
                 PackEvent packEvent = new PackEvent();
                 packEvent.setPack(packService.getPackById(requestDTO.packId()));

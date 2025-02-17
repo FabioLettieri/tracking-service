@@ -1,4 +1,4 @@
-package com.flsolution.mercadolivre.tracking_service.dtos;
+package com.flsolution.mercadolivre.tracking_service.dtos.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class PackRequestDTO {
+public class PackRequest {
 
 	@Schema(description = "Descrição do pacote", example = "Pacote frágil - vidro")
     @NotNull(message = "description is mandatory")

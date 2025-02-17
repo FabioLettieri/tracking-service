@@ -16,7 +16,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackEventRequestDTO;
+import com.flsolution.mercadolivre.tracking_service.dtos.request.PackEventRequest;
 import com.flsolution.mercadolivre.tracking_service.services.ETagService;
 import com.flsolution.mercadolivre.tracking_service.services.impl.PackEventProducerServiceImpl;
 import com.flsolution.mercadolivre.tracking_service.services.impl.PackEventServiceImpl;
@@ -51,7 +51,7 @@ class PackEventControllerTest {
 
     @Test
     void testCreatePackEvent_whenValidationFails_thenReturnBadRequest() throws Exception {
-        PackEventRequestDTO invalidRequestDTO = new PackEventRequestDTO(null, null, null, null);
+        PackEventRequest invalidRequestDTO = new PackEventRequest(null, null, null, null);
 
         mockMvc.perform(post("/api/v1/pack-events")
                 .contentType(MediaType.APPLICATION_JSON)

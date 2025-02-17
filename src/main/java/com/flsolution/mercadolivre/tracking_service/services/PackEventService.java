@@ -12,8 +12,8 @@ import org.springframework.http.CacheControl;
 import org.springframework.stereotype.Service;
 
 import com.flsolution.mercadolivre.tracking_service.converters.PackEventConverter;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackEventDTO;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackEventRequestDTO;
+import com.flsolution.mercadolivre.tracking_service.dtos.request.PackEventRequest;
+import com.flsolution.mercadolivre.tracking_service.dtos.response.PackEventResponse;
 import com.flsolution.mercadolivre.tracking_service.entities.Pack;
 import com.flsolution.mercadolivre.tracking_service.entities.PackEvent;
 import com.flsolution.mercadolivre.tracking_service.repositories.PackEventRepository;
@@ -45,10 +45,10 @@ public class PackEventService implements PackEventServiceImpl {
     
     @Override
     @Cacheable(value = "packs", key = "#pageable.pageNumber + '-' + #pageable.pageSize")
-    public Page<PackEventDTO> getPackEvents(Pageable pageable) {
+    public Page<PackEventResponse> getPackEvents(Pageable pageable) {
         logger.info("[START] - getPackEvents() sender: {}, pageable: {}", pageable);
 
-        Page<PackEventDTO> response = packEventHelperService.getPackEvents(pageable);
+        Page<PackEventResponse> response = packEventHelperService.getPackEvents(pageable);
 
         logger.info("[FINISH] - getPackEvents() total found: {}, total pages: {}", response.getTotalElements(), response.getTotalPages());
         return response;
@@ -57,7 +57,7 @@ public class PackEventService implements PackEventServiceImpl {
     @Override
     @Transactional
     @CachePut(value = "packsById", key = "#requestDTO.packId")
-    public PackEventDTO createPackEvent(PackEventRequestDTO requestDTO) {
+    public PackEventResponse createPackEvent(PackEventRequest requestDTO) {
         logger.info("[START] - createPackEvent() requestDTO: {}", requestDTO);
         
         Pack pack = packService.getPackById(requestDTO.packId());
@@ -65,7 +65,7 @@ public class PackEventService implements PackEventServiceImpl {
         
         PackEvent savedPackEvent = packEventRepository.save(packEvent);
         
-        PackEventDTO response = PackEventConverter.toDTO(savedPackEvent);
+        PackEventResponse response = PackEventConverter.toDTO(savedPackEvent);
         
         logger.info("[FINISH] - createPackEvent()");
         return response;

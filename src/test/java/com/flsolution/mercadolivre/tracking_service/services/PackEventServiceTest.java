@@ -20,8 +20,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.CacheControl;
 
-import com.flsolution.mercadolivre.tracking_service.dtos.PackEventDTO;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackEventRequestDTO;
+import com.flsolution.mercadolivre.tracking_service.dtos.request.PackEventRequest;
+import com.flsolution.mercadolivre.tracking_service.dtos.response.PackEventResponse;
 import com.flsolution.mercadolivre.tracking_service.entities.Pack;
 import com.flsolution.mercadolivre.tracking_service.entities.PackEvent;
 import com.flsolution.mercadolivre.tracking_service.repositories.PackEventRepository;
@@ -95,7 +95,7 @@ class PackEventServiceTest {
 
     @Test
     void testGetPackEvents_whenEventsExist_thenReturnDTOs() {
-    	PackEventDTO dto1 = PackEventDTO.builder()
+    	PackEventResponse dto1 = PackEventResponse.builder()
     			.description("Event 1")
     			.eventDateTime(LocalDateTime.now())
     			.id(1L)
@@ -103,7 +103,7 @@ class PackEventServiceTest {
     			.packId(1L)
     			.build();
     	
-        PackEventDTO dto2 = PackEventDTO.builder()
+        PackEventResponse dto2 = PackEventResponse.builder()
     			.description("Event 2")
     			.eventDateTime(LocalDateTime.now())
     			.id(2L)
@@ -111,11 +111,11 @@ class PackEventServiceTest {
     			.packId(2L)
     			.build();
         
-        Page<PackEventDTO> dtoPage = new PageImpl<>(List.of(dto1, dto2), pageable, 2);
+        Page<PackEventResponse> dtoPage = new PageImpl<>(List.of(dto1, dto2), pageable, 2);
 
         when(packEventHelperService.getPackEvents(pageable)).thenReturn(dtoPage);
 
-        Page<PackEventDTO> result = packEventService.getPackEvents(pageable);
+        Page<PackEventResponse> result = packEventService.getPackEvents(pageable);
 
         assertNotNull(result);
         assertEquals(2, result.getTotalElements());
@@ -125,7 +125,7 @@ class PackEventServiceTest {
     void testGetPackEvents_whenNoEvents_thenReturnEmptyPage() {
         when(packEventHelperService.getPackEvents(pageable)).thenReturn(Page.empty());
 
-        Page<PackEventDTO> result = packEventService.getPackEvents(pageable);
+        Page<PackEventResponse> result = packEventService.getPackEvents(pageable);
 
         assertNotNull(result);
         assertEquals(0, result.getTotalElements());
@@ -133,7 +133,7 @@ class PackEventServiceTest {
 
     @Test
     void testCreatePackEvent_whenPackNotFound_thenThrowException() {
-        PackEventRequestDTO requestDTO = new PackEventRequestDTO(null, null, null, null);
+        PackEventRequest requestDTO = new PackEventRequest(null, null, null, null);
         when(packService.getPackById(requestDTO.packId())).thenThrow(new RuntimeException("Pack not found"));
 
         Exception exception = assertThrows(RuntimeException.class, () -> packEventService.createPackEvent(requestDTO));
@@ -144,7 +144,7 @@ class PackEventServiceTest {
     @Test
     void testCreatePackEvent_whenSaveFails_thenThrowException() {
         Pack pack = createPack(1L);
-        PackEventRequestDTO requestDTO = PackEventRequestDTO.builder()
+        PackEventRequest requestDTO = PackEventRequest.builder()
         		.description("Event 1")
         		.eventDateTime(LocalDateTime.now())
         		.location("Location 1")

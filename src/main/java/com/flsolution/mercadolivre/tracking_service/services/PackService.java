@@ -15,9 +15,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.flsolution.mercadolivre.tracking_service.converters.PackConverter;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackCancelResponseDTO;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackRequestDTO;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackResponseDTO;
+import com.flsolution.mercadolivre.tracking_service.dtos.request.PackRequest;
+import com.flsolution.mercadolivre.tracking_service.dtos.response.PackCancelResponse;
+import com.flsolution.mercadolivre.tracking_service.dtos.response.PackResponse;
 import com.flsolution.mercadolivre.tracking_service.entities.Customer;
 import com.flsolution.mercadolivre.tracking_service.entities.Pack;
 import com.flsolution.mercadolivre.tracking_service.entities.PackEvent;
@@ -46,7 +46,7 @@ public class PackService implements PackServiceImpl {
 
 	@Override
 	@CachePut(value = "packsById", key = "#result.id")
-	public PackResponseDTO createPack(PackRequestDTO request)
+	public PackResponse createPack(PackRequest request)
 			throws CustomerNotFoundException, PackCreateDuplicateDetected {
 		logger.info("[START] - createPack() request: {}", request);
 
@@ -65,7 +65,7 @@ public class PackService implements PackServiceImpl {
 
 		Pack savedPack = packRepository.save(pack);
 
-		PackResponseDTO response = PackConverter.toResponseDTO(savedPack);
+		PackResponse response = PackConverter.toResponseDTO(savedPack);
 
 		logger.info("[FINISH] - createPack() id: {}", savedPack.getId());
 		return response;
@@ -73,7 +73,7 @@ public class PackService implements PackServiceImpl {
 
 	@Override
 	@CachePut(value = "packsById", key = "#id")
-	public PackResponseDTO updateStatusPack(Long id, PackageStatus packageStatus) {
+	public PackResponse updateStatusPack(Long id, PackageStatus packageStatus) {
 		logger.info("[START] - updateStatusPack() id: {}, packageStatus: {}", id, packageStatus);
 
 		Pack pack = getPackById(id);
@@ -86,7 +86,7 @@ public class PackService implements PackServiceImpl {
 		pack.setStatus(packageStatus);
 
 		Pack updatedPack = packRepository.save(pack);
-		PackResponseDTO response = PackConverter.toResponseDTO(updatedPack);
+		PackResponse response = PackConverter.toResponseDTO(updatedPack);
 
 		logger.info("[FINISH] - updateStatusPack()");
 		return response;
@@ -106,7 +106,7 @@ public class PackService implements PackServiceImpl {
 
 	@Override
 	@CacheEvict(value = "packsById", key = "#id")
-	public PackCancelResponseDTO cancelPack(Long id) throws BadRequestException {
+	public PackCancelResponse cancelPack(Long id) throws BadRequestException {
 		logger.info("[START] - cancelPack() id: {}", id);
 
 		Pack pack = getPackById(id);
@@ -114,7 +114,7 @@ public class PackService implements PackServiceImpl {
 		PackValidation.validatePackElegibleForCancellation(pack.getStatus());
 
 		pack.setStatus(PackageStatus.CANCELLED);
-		PackCancelResponseDTO response = PackConverter.toCancelResponseDTO(packRepository.save(pack));
+		PackCancelResponse response = PackConverter.toCancelResponseDTO(packRepository.save(pack));
 
 		logger.info("[FINISH] - cancelPack() id: {}", id);
 		return response;
@@ -122,9 +122,9 @@ public class PackService implements PackServiceImpl {
 
 	@Override
 	@Cacheable(value = "packs", key = "#pageable.pageNumber + '-' + #pageable.pageSize + '-' + #pageable.sort")
-	public Page<PackResponseDTO> getPacks(String sender, String recipient, Pageable pageable) {
+	public Page<PackResponse> getPacks(String sender, String recipient, Pageable pageable) {
 		logger.info("[START] - getPacks() pageable: {}", pageable);
-		Page<PackResponseDTO> response = packHelperService.getPackEvents(sender, recipient, pageable);
+		Page<PackResponse> response = packHelperService.getPackEvents(sender, recipient, pageable);
 
 		logger.info("[FINISH] - getPacks() total elements: {}, total pages: {}", response.getTotalElements(),
 				response.getTotalPages());
@@ -133,12 +133,12 @@ public class PackService implements PackServiceImpl {
 
 	@Override
 	@Cacheable(value = "packsIncludeEvents", key = "#id + '-' + #includeEvents + '-' + #pageable.pageNumber + '-' + #pageable.pageSize")
-	public PackResponseDTO getPackByIdAndIncludeEvents(Long id, Boolean includeEvents, Pageable pageable) {
+	public PackResponse getPackByIdAndIncludeEvents(Long id, Boolean includeEvents, Pageable pageable) {
 		logger.info("[START] - getPackByIdAndIncludeEvents() id: {}, includeEvents: {}", id, includeEvents);
 
 		Pack pack = getPackById(id);
 		Page<PackEvent> events = includeEvents ? packEventHelperService.findByPackId(id, pageable) : Page.empty();
-		PackResponseDTO response = PackConverter.listEventToResponseDTO(pack, events);
+		PackResponse response = PackConverter.listEventToResponseDTO(pack, events);
 
 		logger.info("[FINISH] - getPackByIdAndIncludeEvents() id: {}", id);
 		return response;

@@ -21,8 +21,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 
 import com.flsolution.mercadolivre.tracking_service.converters.PackConverter;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackEventDTO;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackResponseDTO;
+import com.flsolution.mercadolivre.tracking_service.dtos.response.PackEventResponse;
+import com.flsolution.mercadolivre.tracking_service.dtos.response.PackResponse;
 import com.flsolution.mercadolivre.tracking_service.entities.Pack;
 import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
 import com.flsolution.mercadolivre.tracking_service.repositories.PackRepository;
@@ -61,11 +61,11 @@ class PackHelperServiceTest {
 
         try (var mockedConverter = mockStatic(PackConverter.class)) {
             mockedConverter.when(() -> PackConverter.toResponseDTO(any(Pack.class)))
-                           .thenAnswer(invocation -> PackResponseDTO.builder()
+                           .thenAnswer(invocation -> PackResponse.builder()
                         		   .createdAt(LocalDateTime.now())
                         		   .deliveredAt(LocalDateTime.now())
                         		   .description("Livros para entrega")
-                        		   .events(new ArrayList<PackEventDTO>())
+                        		   .events(new ArrayList<PackEventResponse>())
                         		   .id(1L)
                         		   .recipient(recipient)
                         		   .sender(sender)
@@ -73,7 +73,7 @@ class PackHelperServiceTest {
                         		   .updatedAt(LocalDateTime.now())
                         		   .build()
                         		   );
-            Page<PackResponseDTO> result = packHelperService.getPackEvents(sender, recipient, pageable);
+            Page<PackResponse> result = packHelperService.getPackEvents(sender, recipient, pageable);
 
             assertNotNull(result);
             assertEquals(2, result.getTotalElements());
@@ -94,11 +94,11 @@ class PackHelperServiceTest {
 
         try (var mockedConverter = mockStatic(PackConverter.class)) {
             mockedConverter.when(() -> PackConverter.toResponseDTO(any(Pack.class)))
-                           .thenAnswer(invocation -> PackResponseDTO.builder()
+                           .thenAnswer(invocation -> PackResponse.builder()
                         		   .createdAt(LocalDateTime.now())
                         		   .deliveredAt(LocalDateTime.now())
                         		   .description("Livros para entrega")
-                        		   .events(new ArrayList<PackEventDTO>())
+                        		   .events(new ArrayList<PackEventResponse>())
                         		   .id(1L)
                         		   .recipient(null)
                         		   .sender(sender)
@@ -106,7 +106,7 @@ class PackHelperServiceTest {
                         		   .updatedAt(LocalDateTime.now())
                         		   .build());
 
-            Page<PackResponseDTO> result = packHelperService.getPackEvents(sender, null, pageable);
+            Page<PackResponse> result = packHelperService.getPackEvents(sender, null, pageable);
 
             assertNotNull(result);
             assertEquals(2, result.getTotalElements());
@@ -127,11 +127,11 @@ class PackHelperServiceTest {
 
         try (var mockedConverter = mockStatic(PackConverter.class)) {
             mockedConverter.when(() -> PackConverter.toResponseDTO(any(Pack.class)))
-                           .thenAnswer(invocation -> PackResponseDTO.builder()
+                           .thenAnswer(invocation -> PackResponse.builder()
                         		   .createdAt(LocalDateTime.now())
                         		   .deliveredAt(LocalDateTime.now())
                         		   .description("Livros para entrega")
-                        		   .events(new ArrayList<PackEventDTO>())
+                        		   .events(new ArrayList<PackEventResponse>())
                         		   .id(1L)
                         		   .recipient(recipient)
                         		   .sender(null)
@@ -139,7 +139,7 @@ class PackHelperServiceTest {
                         		   .updatedAt(LocalDateTime.now())
                         		   .build());
 
-            Page<PackResponseDTO> result = packHelperService.getPackEvents(null, recipient, pageable);
+            Page<PackResponse> result = packHelperService.getPackEvents(null, recipient, pageable);
 
             assertNotNull(result);
             assertEquals(2, result.getTotalElements());
@@ -158,11 +158,11 @@ class PackHelperServiceTest {
 
         try (var mockedConverter = mockStatic(PackConverter.class)) {
             mockedConverter.when(() -> PackConverter.toResponseDTO(any(Pack.class)))
-                           .thenAnswer(invocation -> PackResponseDTO.builder()
+                           .thenAnswer(invocation -> PackResponse.builder()
                         		   .createdAt(LocalDateTime.now())
                         		   .deliveredAt(LocalDateTime.now())
                         		   .description("Livros para entrega")
-                        		   .events(new ArrayList<PackEventDTO>())
+                        		   .events(new ArrayList<PackEventResponse>())
                         		   .id(1L)
                         		   .recipient(null)
                         		   .sender(null)
@@ -170,7 +170,7 @@ class PackHelperServiceTest {
                         		   .updatedAt(LocalDateTime.now())
                         		   .build());
 
-            Page<PackResponseDTO> result = packHelperService.getPackEvents(null, null, pageable);
+            Page<PackResponse> result = packHelperService.getPackEvents(null, null, pageable);
 
             assertNotNull(result);
             assertEquals(2, result.getTotalElements());
@@ -181,7 +181,7 @@ class PackHelperServiceTest {
     void testGetPackEvents_whenNoResultsFound_thenReturnEmptyPage() {
         when(packRepository.findAll(pageable)).thenReturn(Page.empty());
 
-        Page<PackResponseDTO> result = packHelperService.getPackEvents(null, null, pageable);
+        Page<PackResponse> result = packHelperService.getPackEvents(null, null, pageable);
 
         assertNotNull(result);
         assertEquals(0, result.getTotalElements());

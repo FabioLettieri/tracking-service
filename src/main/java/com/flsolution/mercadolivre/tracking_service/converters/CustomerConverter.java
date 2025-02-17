@@ -3,7 +3,7 @@ package com.flsolution.mercadolivre.tracking_service.converters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.flsolution.mercadolivre.tracking_service.dtos.CustomerResponse;
+import com.flsolution.mercadolivre.tracking_service.dtos.response.CustomerResponse;
 import com.flsolution.mercadolivre.tracking_service.entities.Customer;
 
 public class CustomerConverter {

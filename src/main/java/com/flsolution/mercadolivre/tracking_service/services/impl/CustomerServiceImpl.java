@@ -3,8 +3,8 @@ package com.flsolution.mercadolivre.tracking_service.services.impl;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.flsolution.mercadolivre.tracking_service.dtos.CustomerRequest;
-import com.flsolution.mercadolivre.tracking_service.dtos.CustomerResponse;
+import com.flsolution.mercadolivre.tracking_service.dtos.request.CustomerRequest;
+import com.flsolution.mercadolivre.tracking_service.dtos.response.CustomerResponse;
 
 public interface CustomerServiceImpl {
 	

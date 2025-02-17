@@ -22,7 +22,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import com.flsolution.mercadolivre.tracking_service.configs.RabbitMQConfig;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackEventRequestDTO;
+import com.flsolution.mercadolivre.tracking_service.dtos.request.PackEventRequest;
 
 @ExtendWith(MockitoExtension.class)
 class PackEventProducerServiceTest {
@@ -35,7 +35,7 @@ class PackEventProducerServiceTest {
 
     @Test
     void testSendPackEvent_whenValidRequest_thenSendMessageSuccessfully() throws Exception {
-        PackEventRequestDTO requestDTO = PackEventRequestDTO.builder()
+        PackEventRequest requestDTO = PackEventRequest.builder()
         		.description("Pacote chegou ao centro de distribuição")
         		.eventDateTime(LocalDateTime.now())
         		.location("Location 1")
@@ -48,14 +48,14 @@ class PackEventProducerServiceTest {
         verify(rabbitTemplate, times(1)).convertAndSend(
             eq(RabbitMQConfig.TRACKING_EVENTS_EXCHANGE),
             eq(RabbitMQConfig.TRACKING_EVENTS_ROUTING_KEY),
-            any(PackEventRequestDTO.class) // Adicionando a tipagem explícita
+            any(PackEventRequest.class) // Adicionando a tipagem explícita
         );
     }
 
     @Test
     void testSendPackEvent_whenExceptionOccurs_thenThrowException() {
     	
-    	PackEventRequestDTO requestDTO = PackEventRequestDTO.builder()
+    	PackEventRequest requestDTO = PackEventRequest.builder()
         		.description("Pacote saiu para entrega")
         		.eventDateTime(LocalDateTime.now())
         		.location("Em rota")
@@ -63,31 +63,31 @@ class PackEventProducerServiceTest {
         		.build();
     	
         doThrow(new RuntimeException("Falha ao enviar mensagem")).when(rabbitTemplate)
-            .convertAndSend(eq(RabbitMQConfig.TRACKING_EVENTS_EXCHANGE), eq(RabbitMQConfig.TRACKING_EVENTS_ROUTING_KEY), any(PackEventRequestDTO.class));
+            .convertAndSend(eq(RabbitMQConfig.TRACKING_EVENTS_EXCHANGE), eq(RabbitMQConfig.TRACKING_EVENTS_ROUTING_KEY), any(PackEventRequest.class));
 
         Exception exception = assertThrows(Exception.class, () -> packEventProducerService.sendPackEvent(requestDTO));
 
         assertEquals("Falha ao enviar mensagem", exception.getMessage());
-        verify(rabbitTemplate, times(1)).convertAndSend(anyString(), anyString(), any(PackEventRequestDTO.class));
+        verify(rabbitTemplate, times(1)).convertAndSend(anyString(), anyString(), any(PackEventRequest.class));
     }
 
     @Test
     void testSendListPackEvent_whenValidRequests_thenSendAllMessages() {
-        PackEventRequestDTO request1 = PackEventRequestDTO.builder()
+        PackEventRequest request1 = PackEventRequest.builder()
         		.description("Pacote chegou ao centro de distribuição")
         		.eventDateTime(LocalDateTime.now())
         		.location("Location 1")
         		.packId(1L)
         		.build();
 
-        PackEventRequestDTO request2 = PackEventRequestDTO.builder()
+        PackEventRequest request2 = PackEventRequest.builder()
         		.description("Pacote saiu para entrega")
         		.eventDateTime(LocalDateTime.now())
         		.location("Em rota")
         		.packId(2L)
         		.build();
 
-        List<PackEventRequestDTO> requests = Arrays.asList(request1, request2);
+        List<PackEventRequest> requests = Arrays.asList(request1, request2);
 
         String result = packEventProducerService.sendListPackEvent(requests);
 
@@ -95,27 +95,27 @@ class PackEventProducerServiceTest {
         verify(rabbitTemplate, times(2)).convertAndSend(
             eq(RabbitMQConfig.TRACKING_EVENTS_EXCHANGE),
             eq(RabbitMQConfig.TRACKING_EVENTS_ROUTING_KEY),
-            any(PackEventRequestDTO.class)
+            any(PackEventRequest.class)
         );
     }
 
     @Test
     void testSendListPackEvent_whenOneMessageFails_thenContinueSendingOthers() {
-    	PackEventRequestDTO request1 = PackEventRequestDTO.builder()
+    	PackEventRequest request1 = PackEventRequest.builder()
         		.description("Pacote chegou ao centro de distribuição")
         		.eventDateTime(LocalDateTime.now())
         		.location("Location 1")
         		.packId(1L)
         		.build();
 
-        PackEventRequestDTO request2 = PackEventRequestDTO.builder()
+        PackEventRequest request2 = PackEventRequest.builder()
         		.description("Pacote saiu para entrega")
         		.eventDateTime(LocalDateTime.now())
         		.location("Em rota")
         		.packId(2L)
         		.build();
 
-        List<PackEventRequestDTO> requests = Arrays.asList(request1, request2);
+        List<PackEventRequest> requests = Arrays.asList(request1, request2);
 
         doThrow(new RuntimeException("Erro ao enviar mensagem")).when(rabbitTemplate)
             .convertAndSend(eq(RabbitMQConfig.TRACKING_EVENTS_EXCHANGE),
@@ -125,16 +125,16 @@ class PackEventProducerServiceTest {
         String result = packEventProducerService.sendListPackEvent(requests);
 
         assertEquals("message sent", result);
-        verify(rabbitTemplate, times(2)).convertAndSend(anyString(), anyString(), any(PackEventRequestDTO.class));
+        verify(rabbitTemplate, times(2)).convertAndSend(anyString(), anyString(), any(PackEventRequest.class));
     }
 
     @Test
     void testSendListPackEvent_whenEmptyList_thenDoNothing() {
-        List<PackEventRequestDTO> emptyList = List.of();
+        List<PackEventRequest> emptyList = List.of();
 
         String result = packEventProducerService.sendListPackEvent(emptyList);
 
         assertEquals("message sent", result);
-        verify(rabbitTemplate, never()).convertAndSend(anyString(), anyString(), any(PackEventRequestDTO.class));
+        verify(rabbitTemplate, never()).convertAndSend(anyString(), anyString(), any(PackEventRequest.class));
     }
 }

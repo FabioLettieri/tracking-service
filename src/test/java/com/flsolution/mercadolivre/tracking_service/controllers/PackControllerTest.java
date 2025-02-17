@@ -25,10 +25,10 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackEventDTO;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackRequestDTO;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackResponseDTO;
-import com.flsolution.mercadolivre.tracking_service.dtos.updates.UpdateStatusRequest;
+import com.flsolution.mercadolivre.tracking_service.dtos.request.PackRequest;
+import com.flsolution.mercadolivre.tracking_service.dtos.request.UpdateStatusRequest;
+import com.flsolution.mercadolivre.tracking_service.dtos.response.PackEventResponse;
+import com.flsolution.mercadolivre.tracking_service.dtos.response.PackResponse;
 import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
 import com.flsolution.mercadolivre.tracking_service.services.ETagService;
 import com.flsolution.mercadolivre.tracking_service.services.PackEventService;
@@ -67,14 +67,14 @@ class PackControllerTest {
 
 	@Test
 	void testCreatePackSuccessfully() throws Exception {
-		PackRequestDTO requestDTO = new PackRequestDTO("Livros para entrega", "Loja ABC", "João Silva", true,
+		PackRequest requestDTO = new PackRequest("Livros para entrega", "Loja ABC", "João Silva", true,
 				"24/10/2025", 1L);
 
-		PackResponseDTO responseDTO = PackResponseDTO.builder()
+		PackResponse responseDTO = PackResponse.builder()
 	     		   .createdAt(LocalDateTime.now())
 	     		   .deliveredAt(LocalDateTime.now())
 	     		   .description("Livros para entrega")
-	     		   .events(new ArrayList<PackEventDTO>())
+	     		   .events(new ArrayList<PackEventResponse>())
 	     		   .id(1L)
 	     		   .recipient(null)
 	     		   .sender(null)
@@ -82,7 +82,7 @@ class PackControllerTest {
 	     		   .updatedAt(LocalDateTime.now())
   		   .build();
 
-		lenient().when(packService.createPack(any(PackRequestDTO.class))).thenReturn(responseDTO);
+		lenient().when(packService.createPack(any(PackRequest.class))).thenReturn(responseDTO);
 
 		mockMvc.perform(post("/api/v1/packs").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(requestDTO))).andExpect(status().isOk());
@@ -90,7 +90,7 @@ class PackControllerTest {
 
 	@Test
 	void testCreatePackWithValidRequest() throws Exception {
-		PackRequestDTO requestDTO = new PackRequestDTO("Livros para entrega", "Loja ABC", "João Silva", true,
+		PackRequest requestDTO = new PackRequest("Livros para entrega", "Loja ABC", "João Silva", true,
 				"24/10/2025", 1L);
 
 		mockMvc.perform(post("/api/v1/packs").contentType(MediaType.APPLICATION_JSON)
@@ -99,7 +99,7 @@ class PackControllerTest {
 
 	@Test
 	void testCreatePackWithInvalidRequest() throws Exception {
-		PackRequestDTO invalidRequest = null;
+		PackRequest invalidRequest = null;
 
 		mockMvc.perform(post("/api/v1/packs").contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(invalidRequest))).andExpect(status().isBadRequest());
@@ -112,11 +112,11 @@ class PackControllerTest {
 				.status(PackageStatus.IN_TRANSIT)
 				.build();
 
-		PackResponseDTO responseDTO = PackResponseDTO.builder()
+		PackResponse responseDTO = PackResponse.builder()
 	     		   .createdAt(LocalDateTime.now())
 	     		   .deliveredAt(LocalDateTime.now())
 	     		   .description("Livros para entrega")
-	     		   .events(new ArrayList<PackEventDTO>())
+	     		   .events(new ArrayList<PackEventResponse>())
 	     		   .id(1L)
 	     		   .recipient(null)
 	     		   .sender(null)
@@ -134,11 +134,11 @@ class PackControllerTest {
 	void testUpdateStatusPackWithInvalidTransition() throws Exception {
 		Long packId = 1L;
 
-		PackResponseDTO responseDTO = PackResponseDTO.builder()
+		PackResponse responseDTO = PackResponse.builder()
 	     		   .createdAt(LocalDateTime.now())
 	     		   .deliveredAt(LocalDateTime.now())
 	     		   .description("Livros para entrega")
-	     		   .events(new ArrayList<PackEventDTO>())
+	     		   .events(new ArrayList<PackEventResponse>())
 	     		   .id(1L)
 	     		   .recipient(null)
 	     		   .sender(null)

@@ -4,22 +4,22 @@ import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-import com.flsolution.mercadolivre.tracking_service.dtos.PackCancelResponseDTO;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackRequestDTO;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackResponseDTO;
+import com.flsolution.mercadolivre.tracking_service.dtos.request.PackRequest;
+import com.flsolution.mercadolivre.tracking_service.dtos.response.PackCancelResponse;
+import com.flsolution.mercadolivre.tracking_service.dtos.response.PackResponse;
 import com.flsolution.mercadolivre.tracking_service.entities.Pack;
 import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
 import com.flsolution.mercadolivre.tracking_service.exceptions.CustomerNotFoundException;
 import com.flsolution.mercadolivre.tracking_service.exceptions.PackCreateDuplicateDetected;
 
 public interface PackServiceImpl {
-	PackResponseDTO createPack(PackRequestDTO request) throws CustomerNotFoundException, PackCreateDuplicateDetected;
-	PackResponseDTO updateStatusPack(Long id, PackageStatus packageStatus);
-	PackResponseDTO getPackByIdAndIncludeEvents(Long id, Boolean includeEvents, Pageable pageable);
+	PackResponse createPack(PackRequest request) throws CustomerNotFoundException, PackCreateDuplicateDetected;
+	PackResponse updateStatusPack(Long id, PackageStatus packageStatus);
+	PackResponse getPackByIdAndIncludeEvents(Long id, Boolean includeEvents, Pageable pageable);
 	
-	Page<PackResponseDTO> getPacks(String sender, String recipient, Pageable pageable);
+	Page<PackResponse> getPacks(String sender, String recipient, Pageable pageable);
 
-	PackCancelResponseDTO cancelPack(Long id) throws BadRequestException;
+	PackCancelResponse cancelPack(Long id) throws BadRequestException;
 	
 	Pack getPackById(Long id);
 }

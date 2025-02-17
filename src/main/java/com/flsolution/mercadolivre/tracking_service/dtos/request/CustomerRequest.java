@@ -1,4 +1,4 @@
-package com.flsolution.mercadolivre.tracking_service.dtos;
+package com.flsolution.mercadolivre.tracking_service.dtos.request;
 
 import lombok.Builder;
 

@@ -8,7 +8,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Service;
 
 import com.flsolution.mercadolivre.tracking_service.configs.RabbitMQConfig;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackEventRequestDTO;
+import com.flsolution.mercadolivre.tracking_service.dtos.request.PackEventRequest;
 import com.flsolution.mercadolivre.tracking_service.services.impl.PackEventProducerServiceImpl;
 
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class PackEventProducerService implements PackEventProducerServiceImpl {
 	private final RabbitTemplate rabbitTemplate;
 	
 	@Override
-	public String sendPackEvent(PackEventRequestDTO requestDTO) throws Exception {
+	public String sendPackEvent(PackEventRequest requestDTO) throws Exception {
 		logger.info("[START] - sendPackEvent() requestDTO: {}", requestDTO);
         
         rabbitTemplate.convertAndSend(
@@ -38,7 +38,7 @@ public class PackEventProducerService implements PackEventProducerServiceImpl {
 	}
 
 	@Override
-	public String sendListPackEvent(List<PackEventRequestDTO> requestDTO) {
+	public String sendListPackEvent(List<PackEventRequest> requestDTO) {
 		requestDTO.forEach(request -> {
 			try {
 				sendPackEvent(request);

@@ -1,4 +1,4 @@
-package com.flsolution.mercadolivre.tracking_service.dtos;
+package com.flsolution.mercadolivre.tracking_service.dtos.response;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -10,7 +10,7 @@ import lombok.Builder;
 
 @Builder
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record PackResponseDTO (
+public record PackResponse (
 	Long id,
 	String description,
 	String sender,
@@ -19,6 +19,6 @@ public record PackResponseDTO (
 	LocalDateTime createdAt,
 	LocalDateTime updatedAt,
 	LocalDateTime deliveredAt,
-	List<PackEventDTO> events
+	List<PackEventResponse> events
 		) {
 }

@@ -16,8 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.flsolution.mercadolivre.tracking_service.dtos.PackEventDTO;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackEventRequestDTO;
+import com.flsolution.mercadolivre.tracking_service.dtos.request.PackEventRequest;
+import com.flsolution.mercadolivre.tracking_service.dtos.response.PackEventResponse;
 import com.flsolution.mercadolivre.tracking_service.services.ETagService;
 import com.flsolution.mercadolivre.tracking_service.services.impl.PackEventProducerServiceImpl;
 import com.flsolution.mercadolivre.tracking_service.services.impl.PackEventServiceImpl;
@@ -43,13 +43,13 @@ public class PackEventController {
 	@Operation(summary = "Buscar pacote por todos os eventos", description = "Recupera as informações de todos os eventos registrados paginado")
 	@ApiResponse(responseCode = "200", description = "Lista de eventos retornada com sucesso.")
 	@GetMapping
-	public ResponseEntity<Page<PackEventDTO>> getPackEvents(
+	public ResponseEntity<Page<PackEventResponse>> getPackEvents(
 			@PageableDefault(size = 50) Pageable pageable,
 			HttpServletRequest request) {
 
 	    logger.info("[START] - getPackEvents() pageable: {}", pageable);
 
-	    Page<PackEventDTO> response = packEventServiceImpl.getPackEvents(pageable);
+	    Page<PackEventResponse> response = packEventServiceImpl.getPackEvents(pageable);
 	    
 	    String eTag = eTagService.generateETag(response);
         
@@ -66,11 +66,11 @@ public class PackEventController {
 	}
 	
 	@Operation(summary = "Criar um novo evento do pacote", description = "Cria um novo evento com status de atualizações")
-	@ApiResponse(responseCode = "200", description = "PackEvent criado com sucesso.", content = @Content(schema = @Schema(implementation = PackEventRequestDTO.class)))
+	@ApiResponse(responseCode = "200", description = "PackEvent criado com sucesso.", content = @Content(schema = @Schema(implementation = PackEventRequest.class)))
 	@ApiResponse(responseCode = "400", description = "PackEvent não foi criado por falta de parametros e/ou por parametros errados.")
 	@ApiResponse(responseCode = "404", description = "PackEvent não foi criado por ID informado errado.")
 	@PostMapping
-    public ResponseEntity<String> createPackEvent(@RequestBody @Valid PackEventRequestDTO requestDTO) throws Exception {
+    public ResponseEntity<String> createPackEvent(@RequestBody @Valid PackEventRequest requestDTO) throws Exception {
         logger.info("[START] - createPackEvent()");
 
         packEventProducerServiceImpl.sendPackEvent(requestDTO);
@@ -80,11 +80,11 @@ public class PackEventController {
     }
 
 	@Operation(summary = "Criar um novo evento do pacote", description = "Cria um novo evento com status de atualizações")
-	@ApiResponse(responseCode = "200", description = "PackEvent criado com sucesso.", content = @Content(schema = @Schema(implementation = PackEventRequestDTO.class)))
+	@ApiResponse(responseCode = "200", description = "PackEvent criado com sucesso.", content = @Content(schema = @Schema(implementation = PackEventRequest.class)))
 	@ApiResponse(responseCode = "400", description = "PackEvent não foi criado por falta de parametros e/ou por parametros errados.")
 	@ApiResponse(responseCode = "404", description = "PackEvent não foi criado por ID informado errado.")
 	@PostMapping("/list")
-	public ResponseEntity<String> createListPackEvent(@RequestBody @Valid List<PackEventRequestDTO> requestDTO) throws Exception {
+	public ResponseEntity<String> createListPackEvent(@RequestBody @Valid List<PackEventRequest> requestDTO) throws Exception {
 		logger.info("[START] - createPackEvent()");
 		
 		packEventProducerServiceImpl.sendListPackEvent(requestDTO);

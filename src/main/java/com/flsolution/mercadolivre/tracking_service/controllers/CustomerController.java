@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.flsolution.mercadolivre.tracking_service.dtos.CustomerRequest;
-import com.flsolution.mercadolivre.tracking_service.dtos.CustomerResponse;
+import com.flsolution.mercadolivre.tracking_service.dtos.request.CustomerRequest;
+import com.flsolution.mercadolivre.tracking_service.dtos.response.CustomerResponse;
 import com.flsolution.mercadolivre.tracking_service.services.ETagService;
 import com.flsolution.mercadolivre.tracking_service.services.impl.CustomerServiceImpl;
 import com.flsolution.mercadolivre.tracking_service.utils.CacheControlUtils;

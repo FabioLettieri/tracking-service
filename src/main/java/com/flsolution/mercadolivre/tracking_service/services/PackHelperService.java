@@ -7,7 +7,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.flsolution.mercadolivre.tracking_service.converters.PackConverter;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackResponseDTO;
+import com.flsolution.mercadolivre.tracking_service.dtos.response.PackResponse;
 import com.flsolution.mercadolivre.tracking_service.entities.Pack;
 import com.flsolution.mercadolivre.tracking_service.repositories.PackRepository;
 import com.flsolution.mercadolivre.tracking_service.services.impl.PackHelperServiceImpl;
@@ -23,7 +23,7 @@ public class PackHelperService implements PackHelperServiceImpl {
 	private final PackRepository packRepository;
 
 	@Override
-	public Page<PackResponseDTO> getPackEvents(String sender, String recipient, Pageable pageable) {
+	public Page<PackResponse> getPackEvents(String sender, String recipient, Pageable pageable) {
 		logger.info("[START] - getPackEvents() sender: {}, recipient: {}", sender, recipient);
 
 		Page<Pack> events;
@@ -38,7 +38,7 @@ public class PackHelperService implements PackHelperServiceImpl {
 		    events = packRepository.findAll(pageable);
 		}
 
-		Page<PackResponseDTO> response = events.map(PackConverter::toResponseDTO);
+		Page<PackResponse> response = events.map(PackConverter::toResponseDTO);
 
 		logger.info("[FINISH] - getPackEvents() total elements: {}, total pages: {}", response.getTotalElements(), response.getTotalPages());
 		return response;

@@ -1,6 +1,6 @@
-package com.flsolution.mercadolivre.tracking_service.dtos;
+package com.flsolution.mercadolivre.tracking_service.dtos.request;
 
-public record HolidayRequestDTO (
+public record HolidayRequest (
 		String date,
 		String localName,
 		String name,

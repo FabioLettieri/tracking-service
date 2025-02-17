@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import com.flsolution.mercadolivre.tracking_service.dtos.HolidayRequestDTO;
+import com.flsolution.mercadolivre.tracking_service.dtos.request.HolidayRequest;
 import com.flsolution.mercadolivre.tracking_service.services.impl.ExternalApiNagerServiceImpl;
 
 import lombok.RequiredArgsConstructor;
@@ -34,8 +34,8 @@ public class ExternalApiNagerService implements ExternalApiNagerServiceImpl {
             int year = localDate.getYear();
             String url = String.format("%s/%d/%s", nagerDateUrl, year, "BR");
 
-            HolidayRequestDTO[] holidays = restTemplate.getForObject(url, HolidayRequestDTO[].class);
-            List<HolidayRequestDTO> holidayList = Arrays.asList(holidays);
+            HolidayRequest[] holidays = restTemplate.getForObject(url, HolidayRequest[].class);
+            List<HolidayRequest> holidayList = Arrays.asList(holidays);
 
             boolean isHoliday = holidayList.stream()
                     .anyMatch(holiday -> LocalDate.parse(holiday.date()).equals(localDate));

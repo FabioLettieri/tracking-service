@@ -19,10 +19,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.flsolution.mercadolivre.tracking_service.dtos.PackCancelResponseDTO;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackRequestDTO;
-import com.flsolution.mercadolivre.tracking_service.dtos.PackResponseDTO;
-import com.flsolution.mercadolivre.tracking_service.dtos.updates.UpdateStatusRequest;
+import com.flsolution.mercadolivre.tracking_service.dtos.request.PackRequest;
+import com.flsolution.mercadolivre.tracking_service.dtos.request.UpdateStatusRequest;
+import com.flsolution.mercadolivre.tracking_service.dtos.response.PackCancelResponse;
+import com.flsolution.mercadolivre.tracking_service.dtos.response.PackResponse;
 import com.flsolution.mercadolivre.tracking_service.exceptions.CustomerNotFoundException;
 import com.flsolution.mercadolivre.tracking_service.exceptions.PackCreateDuplicateDetected;
 import com.flsolution.mercadolivre.tracking_service.services.ETagService;
@@ -49,36 +49,36 @@ public class PackController {
 	private final ETagService eTagService;
 	
 	@Operation(summary = "Criar um novo pacote", description = "Cria um novo pacote para rastreamento")
-	@ApiResponse(responseCode = "200", description = "Pacote criado com sucesso.", content = @Content(schema = @Schema(implementation = PackResponseDTO.class)))
+	@ApiResponse(responseCode = "200", description = "Pacote criado com sucesso.", content = @Content(schema = @Schema(implementation = PackResponse.class)))
 	@ApiResponse(responseCode = "400", description = "Pacote não foi criado por falta de parametros e/ou por parametros errados.")
 	@PostMapping
-	public ResponseEntity<PackResponseDTO> createPack(@RequestBody @Valid PackRequestDTO request) throws CustomerNotFoundException, PackCreateDuplicateDetected {
+	public ResponseEntity<PackResponse> createPack(@RequestBody @Valid PackRequest request) throws CustomerNotFoundException, PackCreateDuplicateDetected {
 		logger.info("[START] - createPack() request: {}", request);
 		
-		PackResponseDTO response = packServiceImpl.createPack(request);
+		PackResponse response = packServiceImpl.createPack(request);
 		
 		logger.info("[FINISH] - createPack()");
 		return ResponseEntity.ok(response);
 	}
 	
 	@Operation(summary = "Atualizar status do pacote", description = "Atualiza o status de um pacote específico")
-	@ApiResponse(responseCode = "200", description = "Status atualizado com sucesso.", content = @Content(schema = @Schema(implementation = PackResponseDTO.class)))
+	@ApiResponse(responseCode = "200", description = "Status atualizado com sucesso.", content = @Content(schema = @Schema(implementation = PackResponse.class)))
 	@ApiResponse(responseCode = "400", description = "Status inválido.")
 	@PatchMapping("/{id}/status")
-	public ResponseEntity<PackResponseDTO> updatePackStatus(@PathVariable Long id, @RequestBody @Valid UpdateStatusRequest request) {
+	public ResponseEntity<PackResponse> updatePackStatus(@PathVariable Long id, @RequestBody @Valid UpdateStatusRequest request) {
 		logger.info("[START] - updatePackStatus() request: {}", request);
 		
-		PackResponseDTO response = packServiceImpl.updateStatusPack(id, request.status());
+		PackResponse response = packServiceImpl.updateStatusPack(id, request.status());
 		
 		logger.info("[FINISH] - updatePackStatus()");
 		return ResponseEntity.ok(response);
 	}
 	
 	@Operation(summary = "Buscar pacote por um ID", description = "Recupera as informações de um pacote pelo seu ID")
-	@ApiResponse(responseCode = "200", description = "Pacote encontrado", content = @Content(schema = @Schema(implementation = PackResponseDTO.class)))
+	@ApiResponse(responseCode = "200", description = "Pacote encontrado", content = @Content(schema = @Schema(implementation = PackResponse.class)))
 	@ApiResponse(responseCode = "404", description = "Pacote não encontrado")
 	@GetMapping("/{id}")
-	public ResponseEntity<PackResponseDTO> getPackById(
+	public ResponseEntity<PackResponse> getPackById(
 		    @PathVariable Long id,
 		    @RequestParam(required = false, defaultValue = "false") boolean includeEvents,
 		    @PageableDefault(size = 50) Pageable pageable,
@@ -86,7 +86,7 @@ public class PackController {
 
         logger.info("[START] - getPackById() id: {}, includeEvents: {}", id, includeEvents);
 
-        PackResponseDTO response = packServiceImpl.getPackByIdAndIncludeEvents(id, includeEvents, pageable);
+        PackResponse response = packServiceImpl.getPackByIdAndIncludeEvents(id, includeEvents, pageable);
         
         String eTag = eTagService.generateETag(response);
         
@@ -103,9 +103,9 @@ public class PackController {
     }
 	
 	@Operation(summary = "Buscar todos os pacotes", description = "Retorna todos os pacotes paginado")
-	@ApiResponse(responseCode = "200", description = "Pacotes encontrados", content = @Content(schema = @Schema(implementation = PackResponseDTO.class)))
+	@ApiResponse(responseCode = "200", description = "Pacotes encontrados", content = @Content(schema = @Schema(implementation = PackResponse.class)))
 	@GetMapping
-	public ResponseEntity<Page<PackResponseDTO>> getPacks(
+	public ResponseEntity<Page<PackResponse>> getPacks(
 			@RequestParam(required = false) String sender,
 	        @RequestParam(required = false) String recipient,
 		    @PageableDefault(size = 50) Pageable pageable,
@@ -113,7 +113,7 @@ public class PackController {
 
 		logger.info("[START] - getPacks() sender: {}, recipient: {}, pageable: {}", sender, recipient, pageable);
 		
-		Page<PackResponseDTO> response = packServiceImpl.getPacks(sender, recipient, pageable);
+		Page<PackResponse> response = packServiceImpl.getPacks(sender, recipient, pageable);
 
 		String eTag = eTagService.generateETag(response);
 		
@@ -130,13 +130,13 @@ public class PackController {
     }
 
 	@Operation(summary = "Cancelar um pacote específico", description = "Cancela um pacote antes da entrega ao cliente")
-	@ApiResponse(responseCode = "200", description = "Cancelamento efetuado", content = @Content(schema = @Schema(implementation = PackCancelResponseDTO.class)))
+	@ApiResponse(responseCode = "200", description = "Cancelamento efetuado", content = @Content(schema = @Schema(implementation = PackCancelResponse.class)))
 	@ApiResponse(responseCode = "400", description = "Cancelamento não realizado")
 	@PutMapping("/{id}/cancel")
-	public ResponseEntity<PackCancelResponseDTO> cancelPack(@PathVariable Long id) throws BadRequestException {
+	public ResponseEntity<PackCancelResponse> cancelPack(@PathVariable Long id) throws BadRequestException {
 		logger.info("[START] - cancelPack() id: {}", id);
 		
-		PackCancelResponseDTO response = packServiceImpl.cancelPack(id);
+		PackCancelResponse response = packServiceImpl.cancelPack(id);
 		
 		logger.info("[FINISH] - cancelPack()");
 		return ResponseEntity.ok(response);
