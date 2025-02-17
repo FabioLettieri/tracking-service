@@ -25,6 +25,7 @@ import com.flsolution.mercadolivre.tracking_service.dtos.updates.UpdateStatusReq
 import com.flsolution.mercadolivre.tracking_service.exceptions.CustomerNotFoundException;
 import com.flsolution.mercadolivre.tracking_service.services.ETagService;
 import com.flsolution.mercadolivre.tracking_service.services.impl.PackServiceImpl;
+import com.flsolution.mercadolivre.tracking_service.utils.CacheControlUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -95,7 +96,7 @@ public class PackController {
         logger.info("[FINISH] - getPackById()");
         return ResponseEntity.ok()
                 .header(HttpHeaders.ETAG, eTag)
-                .cacheControl(packServiceImpl.getCacheControl())
+                .cacheControl(CacheControlUtils.getCacheControl())
                 .body(response);
     }
 	
@@ -122,7 +123,7 @@ public class PackController {
 		logger.info("[FINISH] - getPacks()");
 		return ResponseEntity.ok()
 				.header(HttpHeaders.ETAG, eTag)
-				.cacheControl(packServiceImpl.getCacheControl())
+				.cacheControl(CacheControlUtils.getCacheControl())
 				.body(response);
     }
 

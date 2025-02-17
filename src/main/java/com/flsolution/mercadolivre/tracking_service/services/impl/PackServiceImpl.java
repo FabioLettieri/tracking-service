@@ -3,7 +3,6 @@ package com.flsolution.mercadolivre.tracking_service.services.impl;
 import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.CacheControl;
 
 import com.flsolution.mercadolivre.tracking_service.dtos.PackCancelResponseDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackRequestDTO;
@@ -22,7 +21,4 @@ public interface PackServiceImpl {
 	PackCancelResponseDTO cancelPack(Long id) throws BadRequestException;
 	
 	Pack getPackById(Long id);
-	
-	CacheControl getCacheControl();
-
 }

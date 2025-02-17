@@ -26,7 +26,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.CacheControl;
 
 import com.flsolution.mercadolivre.tracking_service.dtos.PackCancelResponseDTO;
 import com.flsolution.mercadolivre.tracking_service.dtos.PackEventDTO;
@@ -304,13 +303,4 @@ class PackServiceTest {
             verify(packRepository, never()).save(any(Pack.class));
         }
     }
-    @Test
-    void testGetCacheControl_shouldReturnCorrectCacheSettings() {
-        CacheControl cacheControl = packService.getCacheControl();
-
-        assertNotNull(cacheControl);
-        assertEquals("max-age=300", cacheControl.getHeaderValue());
-        
-    }
-    
 }

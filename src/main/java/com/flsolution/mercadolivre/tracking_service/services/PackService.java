@@ -2,7 +2,6 @@
 
 import java.time.LocalDateTime;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.coyote.BadRequestException;
 import org.slf4j.Logger;
@@ -12,7 +11,6 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.CacheControl;
 import org.springframework.stereotype.Service;
 
 import com.flsolution.mercadolivre.tracking_service.converters.PackConverter;
@@ -151,9 +149,4 @@ public class PackService implements PackServiceImpl {
 		logger.info("[FINISH] - getPackByIdAndIncludeEvents() id: {}", id);
 		return response;
 	}
-
-	@Override
-    public CacheControl getCacheControl() {
-        return CacheControl.maxAge(5, TimeUnit.MINUTES);
-    }
 }
