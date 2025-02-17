@@ -158,5 +158,17 @@ public class GlobalExceptionHandler {
     	return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
+    /**
+     * Handle errors and return a 400 Bad Request with detailed messages.
+     */
+    @ExceptionHandler(PackCreateDuplicateDetected.class)
+    public ResponseEntity<Map<String, String>> handlePackCreateDuplicateDetected(PackCreateDuplicateDetected ex) {
+    	logger.error("[ERROR] - Duplicate request detected. Discarding duplicate Pack creation.", ex.getMessage());
+    	
+    	Map<String, String> error = Collections.singletonMap("error", ex.getMessage());
+    	
+    	return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
+    }
+
 
 }

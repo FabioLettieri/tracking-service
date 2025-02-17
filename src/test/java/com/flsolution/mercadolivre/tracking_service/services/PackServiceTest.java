@@ -36,6 +36,7 @@ import com.flsolution.mercadolivre.tracking_service.entities.Pack;
 import com.flsolution.mercadolivre.tracking_service.entities.PackEvent;
 import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
 import com.flsolution.mercadolivre.tracking_service.exceptions.CustomerNotFoundException;
+import com.flsolution.mercadolivre.tracking_service.exceptions.PackCreateDuplicateDetected;
 import com.flsolution.mercadolivre.tracking_service.exceptions.PackNotFoundException;
 import com.flsolution.mercadolivre.tracking_service.repositories.PackRepository;
 import com.flsolution.mercadolivre.tracking_service.utils.PackValidation;
@@ -66,7 +67,7 @@ class PackServiceTest {
     private CustomerService customerService;
     
     @Test
-    void testShouldCreatePackSuccessfully() throws CustomerNotFoundException {
+    void testShouldCreatePackSuccessfully() throws CustomerNotFoundException, PackCreateDuplicateDetected {
         PackRequestDTO requestDTO = new PackRequestDTO(
             "Livros para entrega",
             "Loja ABC",

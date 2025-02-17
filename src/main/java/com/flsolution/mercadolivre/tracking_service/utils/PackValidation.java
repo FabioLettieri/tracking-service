@@ -1,18 +1,23 @@
 package com.flsolution.mercadolivre.tracking_service.utils;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.coyote.BadRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.flsolution.mercadolivre.tracking_service.entities.Pack;
 import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
 import com.flsolution.mercadolivre.tracking_service.exceptions.CancelPackStatusCanceledException;
 import com.flsolution.mercadolivre.tracking_service.exceptions.CancelPackStatusDeliveredException;
 import com.flsolution.mercadolivre.tracking_service.exceptions.CancelPackStatusInTransitException;
+import com.flsolution.mercadolivre.tracking_service.exceptions.PackCreateDuplicateDetected;
 import com.flsolution.mercadolivre.tracking_service.exceptions.PackStatusInvalidException;
 
 public class PackValidation {
@@ -74,5 +79,20 @@ public class PackValidation {
         }
 
         logger.info("[FINISH] - validatePackElegibleForCancellation()");
+	}
+	
+	public static void validateDuplicateRequest(Optional<Pack> optPack) throws PackCreateDuplicateDetected {
+		logger.info("[START] - validateDuplicateRequest() optPack: {}", optPack);
+		if (optPack.isPresent()) {
+			Pack pack = optPack.get();
+			LocalDateTime createdAt = pack.getCreatedAt();
+	        LocalDateTime now = LocalDateTime.now();
+	        
+	        if (Duration.between(createdAt, now).toMinutes() <= 2) {
+	        	logger.error("[] - validateDuplicateRequest() WITH ERRORS");
+	        	throw new PackCreateDuplicateDetected("Duplicate orders detected, as there is an order placed less than 2 minutes ago.");
+	        }
+	    }
+		logger.info("[FINISH] - validateDuplicateRequest()");
 	}
 }

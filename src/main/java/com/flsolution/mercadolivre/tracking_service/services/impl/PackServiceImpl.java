@@ -10,9 +10,10 @@ import com.flsolution.mercadolivre.tracking_service.dtos.PackResponseDTO;
 import com.flsolution.mercadolivre.tracking_service.entities.Pack;
 import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
 import com.flsolution.mercadolivre.tracking_service.exceptions.CustomerNotFoundException;
+import com.flsolution.mercadolivre.tracking_service.exceptions.PackCreateDuplicateDetected;
 
 public interface PackServiceImpl {
-	PackResponseDTO createPack(PackRequestDTO request) throws CustomerNotFoundException;
+	PackResponseDTO createPack(PackRequestDTO request) throws CustomerNotFoundException, PackCreateDuplicateDetected;
 	PackResponseDTO updateStatusPack(Long id, PackageStatus packageStatus);
 	PackResponseDTO getPackByIdAndIncludeEvents(Long id, Boolean includeEvents, Pageable pageable);
 	
