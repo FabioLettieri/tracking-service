@@ -5,6 +5,8 @@ import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.flsolution.mercadolivre.tracking_service.converters.CustomerConverter;
@@ -43,7 +45,7 @@ public class CustomerService implements CustomerServiceImpl {
 				.build();
 
 		customerToCreate = customerRepository.save(customerToCreate);
-        var response = CustomerConverter.toResponseDTO(customerToCreate);
+        var response = CustomerConverter.toResponse(customerToCreate);
         
         logger.info("[FINISH] - createCustomer()");
         return response;
@@ -59,12 +61,24 @@ public class CustomerService implements CustomerServiceImpl {
 
 	public Customer findById(Long customerId) throws CustomerNotFoundException {
 		logger.info("[START] - findById() customerId: {}", customerId);
+		
 		Optional<Customer> optCustomer = customerRepository.findById(customerId);
 		var response = CustomerValidation.validateExistsCustomerWithId(optCustomer, customerId);
 		
 		logger.info("[FINISH] - findById()");
 		return response;
 		
+	}
+
+	@Override
+	public Page<CustomerResponse> getCustomers(String sender, String recipient, Pageable pageable) {
+		logger.info("[START] - getCustomers() sender: {}, recipient: {}, pageable: {}", sender, recipient, pageable);
+		
+		Page<Customer> customers = customerRepository.findAll(pageable);
+		Page<CustomerResponse> response = customers.map(CustomerConverter::toResponse);
+		
+		logger.info("[FINISH] - getCustomers()");
+		return response;
 	}
 
 

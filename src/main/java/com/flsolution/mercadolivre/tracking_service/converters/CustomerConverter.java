@@ -10,8 +10,8 @@ public class CustomerConverter {
 	
 	private static final Logger logger = LoggerFactory.getLogger(CustomerConverter.class);
 	
-	public static CustomerResponse toResponseDTO(Customer customer) {
-		logger.info("[START] - toResponseDTO() customer: {}", customer);
+	public static CustomerResponse toResponse(Customer customer) {
+		logger.info("[START] - toResponse() customer: {}", customer);
 		
 		var response = new CustomerResponse(
 				customer.getId(),
@@ -23,7 +23,7 @@ public class CustomerConverter {
 				customer.getPacks()
 				);
 		
-		logger.info("[FINISH] - toResponseDTO()");
+		logger.info("[FINISH] - toResponse()");
 		return response;
 	}
 
