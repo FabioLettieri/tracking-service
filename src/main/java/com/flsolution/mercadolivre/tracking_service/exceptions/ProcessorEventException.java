@@ -1,4 +1,4 @@
-package com.flsolution.mercadolivre.tracking_service.batch;
+package com.flsolution.mercadolivre.tracking_service.exceptions;
 
 public class ProcessorEventException extends RuntimeException {
 

@@ -9,9 +9,6 @@ import com.flsolution.mercadolivre.tracking_service.exceptions.CancelPackStatusC
 import com.flsolution.mercadolivre.tracking_service.exceptions.CancelPackStatusDeliveredException;
 import com.flsolution.mercadolivre.tracking_service.exceptions.CancelPackStatusInTransitException;
 
-import lombok.AllArgsConstructor;
-
-@AllArgsConstructor
 public class PackValidation {
 	
 	private static final Logger logger = LoggerFactory.getLogger(PackValidation.class);
