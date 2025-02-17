@@ -1,10 +1,8 @@
 package com.flsolution.mercadolivre.tracking_service.utils;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import org.junit.jupiter.api.Test;
 
@@ -12,37 +10,41 @@ import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
 import com.flsolution.mercadolivre.tracking_service.exceptions.CancelPackStatusCanceledException;
 import com.flsolution.mercadolivre.tracking_service.exceptions.CancelPackStatusDeliveredException;
 import com.flsolution.mercadolivre.tracking_service.exceptions.CancelPackStatusInTransitException;
+import com.flsolution.mercadolivre.tracking_service.exceptions.PackStatusInvalidException;
 
 class PackValidationTest {
 
-    @Test
-    void testValidateStatusTransition_whenCreatedToInTransit_thenReturnTrue() {
-        boolean result = PackValidation.validateStatusTransition(PackageStatus.CREATED, PackageStatus.IN_TRANSIT);
-        assertTrue(result, "A transição de CREATED para IN_TRANSIT deve ser válida.");
+	@Test
+    void testValidateStatusTransition_whenCreatedToInTransit_thenNoExceptionThrown() {
+        assertDoesNotThrow(() -> PackValidation.validateStatusTransition(PackageStatus.CREATED, PackageStatus.IN_TRANSIT),
+            "A transição de CREATED para IN_TRANSIT deve ser válida.");
     }
 
     @Test
-    void testValidateStatusTransition_whenInTransitToDelivered_thenReturnTrue() {
-        boolean result = PackValidation.validateStatusTransition(PackageStatus.IN_TRANSIT, PackageStatus.DELIVERED);
-        assertTrue(result, "A transição de IN_TRANSIT para DELIVERED deve ser válida.");
+    void testValidateStatusTransition_whenInTransitToDelivered_thenNoExceptionThrown() {
+        assertDoesNotThrow(() -> PackValidation.validateStatusTransition(PackageStatus.IN_TRANSIT, PackageStatus.DELIVERED),
+            "A transição de IN_TRANSIT para DELIVERED deve ser válida.");
     }
 
     @Test
-    void testValidateStatusTransition_whenInvalidTransition_thenReturnFalse() {
-        boolean result = PackValidation.validateStatusTransition(PackageStatus.CREATED, PackageStatus.DELIVERED);
-        assertFalse(result, "A transição direta de CREATED para DELIVERED deve ser inválida.");
+    void testValidateStatusTransition_whenInvalidTransition_thenThrowsException() {
+        assertThrows(PackStatusInvalidException.class,
+            () -> PackValidation.validateStatusTransition(PackageStatus.CREATED, PackageStatus.DELIVERED),
+            "A transição direta de CREATED para DELIVERED deve ser inválida.");
     }
 
     @Test
-    void testValidateStatusTransition_whenSameStatus_thenReturnFalse() {
-        boolean result = PackValidation.validateStatusTransition(PackageStatus.CREATED, PackageStatus.CREATED);
-        assertFalse(result, "A transição de um status para ele mesmo deve ser inválida.");
+    void testValidateStatusTransition_whenSameStatus_thenThrowsException() {
+        assertThrows(PackStatusInvalidException.class,
+            () -> PackValidation.validateStatusTransition(PackageStatus.CREATED, PackageStatus.CREATED),
+            "A transição de um status para ele mesmo deve ser inválida.");
     }
 
     @Test
-    void testValidateStatusTransition_whenDeliveredToInTransit_thenReturnFalse() {
-        boolean result = PackValidation.validateStatusTransition(PackageStatus.DELIVERED, PackageStatus.IN_TRANSIT);
-        assertFalse(result, "A transição de DELIVERED para IN_TRANSIT deve ser inválida.");
+    void testValidateStatusTransition_whenDeliveredToInTransit_thenThrowsException() {
+        assertThrows(PackStatusInvalidException.class,
+            () -> PackValidation.validateStatusTransition(PackageStatus.DELIVERED, PackageStatus.IN_TRANSIT),
+            "A transição de DELIVERED para IN_TRANSIT deve ser inválida.");
     }
     
     @Test

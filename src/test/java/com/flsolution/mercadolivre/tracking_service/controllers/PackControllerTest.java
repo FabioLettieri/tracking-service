@@ -108,8 +108,9 @@ class PackControllerTest {
 	@Test
 	void testUpdateStatusPackSuccessfully() throws Exception {
 		Long packId = 1L;
-		UpdateStatusRequest updateStatusRequest = new UpdateStatusRequest();
-		updateStatusRequest.setStatus(PackageStatus.IN_TRANSIT);
+		UpdateStatusRequest updateStatusRequest = UpdateStatusRequest.builder()
+				.status(PackageStatus.IN_TRANSIT)
+				.build();
 
 		PackResponseDTO responseDTO = PackResponseDTO.builder()
 	     		   .createdAt(LocalDateTime.now())

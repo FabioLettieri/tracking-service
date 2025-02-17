@@ -10,6 +10,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -62,11 +63,11 @@ public class PackController {
 	@Operation(summary = "Atualizar status do pacote", description = "Atualiza o status de um pacote específico")
 	@ApiResponse(responseCode = "200", description = "Status atualizado com sucesso.", content = @Content(schema = @Schema(implementation = PackResponseDTO.class)))
 	@ApiResponse(responseCode = "400", description = "Status inválido.")
-	@PutMapping("/{id}/status")
+	@PatchMapping("/{id}/status")
 	public ResponseEntity<PackResponseDTO> updatePackStatus(@PathVariable Long id, @RequestBody @Valid UpdateStatusRequest request) {
 		logger.info("[START] - updatePackStatus() request: {}", request);
 		
-		PackResponseDTO response = packServiceImpl.updateStatusPack(id, request.getStatus());
+		PackResponseDTO response = packServiceImpl.updateStatusPack(id, request.status());
 		
 		logger.info("[FINISH] - updatePackStatus()");
 		return ResponseEntity.ok(response);

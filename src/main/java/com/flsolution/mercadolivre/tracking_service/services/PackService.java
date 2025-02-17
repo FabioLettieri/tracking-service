@@ -84,18 +84,18 @@ public class PackService implements PackServiceImpl {
 		logger.info("[START] - updateStatusPack() id: {}, packageStatus: {}", id, packageStatus);
 
 		Pack pack = getPackById(id);
-		
 		PackValidation.validateStatusTransition(pack.getStatus(), packageStatus);
-		pack.setStatus(packageStatus);
 		
 		if (packageStatus == PackageStatus.DELIVERED) {
 			pack.setDeliveredAt(LocalDateTime.now());
 		}
 		
+		pack.setStatus(packageStatus);
+
 		Pack updatedPack = packRepository.save(pack);
 		PackResponseDTO response = PackConverter.toResponseDTO(updatedPack);
 		
-		logger.info("[FINISH] - updateStatusPack() id: {}", updatedPack.getId());
+		logger.info("[FINISH] - updateStatusPack()");
 		return response;
 	}
 
