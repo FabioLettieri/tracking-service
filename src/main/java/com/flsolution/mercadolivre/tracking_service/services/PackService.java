@@ -1,6 +1,7 @@
 package com.flsolution.mercadolivre.tracking_service.services;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.coyote.BadRequestException;
@@ -49,7 +50,7 @@ public class PackService implements PackServiceImpl {
 			throws CustomerNotFoundException, PackCreateDuplicateDetected {
 		logger.info("[START] - createPack() request: {}", request);
 
-		Optional<Pack> optPack = packRepository.findByCustomerId(request.getCustomerId());
+		Optional<List<Pack>> optPack = packRepository.findByCustomerId(request.getCustomerId());
 		PackValidation.validateDuplicateRequest(optPack);
 
 		Customer customer = customerRepository.findById(request.getCustomerId());

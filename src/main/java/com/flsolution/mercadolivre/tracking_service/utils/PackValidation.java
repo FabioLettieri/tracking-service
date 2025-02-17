@@ -4,6 +4,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -81,15 +82,17 @@ public class PackValidation {
         logger.info("[FINISH] - validatePackElegibleForCancellation()");
 	}
 	
-	public static void validateDuplicateRequest(Optional<Pack> optPack) throws PackCreateDuplicateDetected {
+	public static void validateDuplicateRequest(Optional<List<Pack>> optPack) throws PackCreateDuplicateDetected {
 		logger.info("[START] - validateDuplicateRequest() optPack: {}", optPack);
 		if (optPack.isPresent()) {
-			Pack pack = optPack.get();
+			List<Pack> listPack = optPack.get();
+			Pack pack = listPack.getLast();
+			
 			LocalDateTime createdAt = pack.getCreatedAt();
 	        LocalDateTime now = LocalDateTime.now();
 	        
 	        if (Duration.between(createdAt, now).toMinutes() <= 2) {
-	        	logger.error("[] - validateDuplicateRequest() WITH ERRORS");
+	        	logger.error("[FINISH] - validateDuplicateRequest() WITH ERRORS");
 	        	throw new PackCreateDuplicateDetected("Duplicate orders detected, as there is an order placed less than 2 minutes ago.");
 	        }
 	    }
