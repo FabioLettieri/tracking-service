@@ -18,7 +18,7 @@ import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
 import com.flsolution.mercadolivre.tracking_service.exceptions.CancelPackStatusCanceledException;
 import com.flsolution.mercadolivre.tracking_service.exceptions.CancelPackStatusDeliveredException;
 import com.flsolution.mercadolivre.tracking_service.exceptions.CancelPackStatusInTransitException;
-import com.flsolution.mercadolivre.tracking_service.exceptions.PackCreateDuplicateDetected;
+import com.flsolution.mercadolivre.tracking_service.exceptions.PackCreateDuplicateDetectedException;
 import com.flsolution.mercadolivre.tracking_service.exceptions.PackStatusInvalidException;
 
 public class PackValidation {
@@ -79,7 +79,7 @@ public class PackValidation {
         logger.info("[FINISH] - validatePackElegibleForCancellation()");
 	}
 	
-	public static void validateDuplicateRequest(Optional<List<Pack>> optPack) throws PackCreateDuplicateDetected {
+	public static void validateDuplicateRequest(Optional<List<Pack>> optPack) throws PackCreateDuplicateDetectedException {
 		logger.info("[START] - validateDuplicateRequest() optPack: {}", optPack);
 		if (optPack.isPresent()) {
 			List<Pack> listPack = optPack.get();
@@ -90,7 +90,7 @@ public class PackValidation {
 	        
 	        if (Duration.between(createdAt, now).toMinutes() <= 2) {
 	        	logger.error("[FINISH] - validateDuplicateRequest() WITH ERRORS");
-	        	throw new PackCreateDuplicateDetected("Duplicate orders detected, as there is an order placed less than 2 minutes ago.");
+	        	throw new PackCreateDuplicateDetectedException("Duplicate orders detected, as there is an order placed less than 2 minutes ago.");
 	        }
 	    }
 		logger.info("[FINISH] - validateDuplicateRequest()");

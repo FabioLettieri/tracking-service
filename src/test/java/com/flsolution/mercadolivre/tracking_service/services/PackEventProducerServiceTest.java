@@ -48,7 +48,7 @@ class PackEventProducerServiceTest {
         verify(rabbitTemplate, times(1)).convertAndSend(
             eq(RabbitMQConfig.TRACKING_EVENTS_EXCHANGE),
             eq(RabbitMQConfig.TRACKING_EVENTS_ROUTING_KEY),
-            any(PackEventRequest.class) // Adicionando a tipagem explícita
+            any(PackEventRequest.class)
         );
     }
 

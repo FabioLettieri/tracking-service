@@ -26,7 +26,6 @@ class GlobalExceptionHandlerTest {
         exceptionHandler = new GlobalExceptionHandler();
     }
 
-    // ✅ Teste para exceção genérica (RuntimeException)
     @Test
     void testHandleRuntimeException() {
         RuntimeException ex = new RuntimeException("Erro inesperado");
@@ -37,7 +36,6 @@ class GlobalExceptionHandlerTest {
         assertEquals("An unexpected error occurred: Erro inesperado", response.getBody());
     }
 
-    // ✅ Teste para erro quando o pacote não é encontrado
     @Test
     void testHandlePackNotFoundException() {
         PackNotFoundException ex = new PackNotFoundException("Pacote não encontrado");
@@ -48,7 +46,6 @@ class GlobalExceptionHandlerTest {
         assertEquals("Pacote não encontrado", response.getBody().get("error"));
     }
 
-    // ✅ Teste para erro ao processar evento
     @Test
     void testHandleProcessorEventException() {
         ProcessorEventException ex = new ProcessorEventException("Erro ao processar evento");
@@ -59,7 +56,6 @@ class GlobalExceptionHandlerTest {
         assertEquals("Erro ao processar evento", response.getBody().get("error"));
     }
 
-    // ✅ Teste para erro ao tentar cancelar um pacote em trânsito
     @Test
     void testHandleCancelPackStatusInTransitException() {
         CancelPackStatusInTransitException ex = new CancelPackStatusInTransitException("Pacote em trânsito");
@@ -70,7 +66,6 @@ class GlobalExceptionHandlerTest {
         assertEquals("Pacote em trânsito", response.getBody().get("error"));
     }
 
-    // ✅ Teste para erro ao tentar cancelar um pacote já cancelado
     @Test
     void testHandleCancelPackStatusCanceledException() {
         CancelPackStatusCanceledException ex = new CancelPackStatusCanceledException("Pacote já cancelado");
@@ -81,7 +76,6 @@ class GlobalExceptionHandlerTest {
         assertEquals("Pacote já cancelado", response.getBody().get("error"));
     }
 
-    // ✅ Teste para erro ao tentar cancelar um pacote já entregue
     @Test
     void testHandleCancelPackStatusDeliveredException() {
         CancelPackStatusDeliveredException ex = new CancelPackStatusDeliveredException("Pacote já entregue");

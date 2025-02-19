@@ -24,7 +24,7 @@ import com.flsolution.mercadolivre.tracking_service.dtos.request.UpdateStatusReq
 import com.flsolution.mercadolivre.tracking_service.dtos.response.PackCancelResponse;
 import com.flsolution.mercadolivre.tracking_service.dtos.response.PackResponse;
 import com.flsolution.mercadolivre.tracking_service.exceptions.CustomerNotFoundException;
-import com.flsolution.mercadolivre.tracking_service.exceptions.PackCreateDuplicateDetected;
+import com.flsolution.mercadolivre.tracking_service.exceptions.PackCreateDuplicateDetectedException;
 import com.flsolution.mercadolivre.tracking_service.services.ETagService;
 import com.flsolution.mercadolivre.tracking_service.services.impl.PackServiceImpl;
 import com.flsolution.mercadolivre.tracking_service.utils.CacheControlUtils;
@@ -52,7 +52,7 @@ public class PackController {
 	@ApiResponse(responseCode = "200", description = "Pacote criado com sucesso.", content = @Content(schema = @Schema(implementation = PackResponse.class)))
 	@ApiResponse(responseCode = "400", description = "Pacote não foi criado por falta de parametros e/ou por parametros errados.")
 	@PostMapping
-	public ResponseEntity<PackResponse> createPack(@RequestBody @Valid PackRequest request) throws CustomerNotFoundException, PackCreateDuplicateDetected {
+	public ResponseEntity<PackResponse> createPack(@RequestBody @Valid PackRequest request) throws CustomerNotFoundException, PackCreateDuplicateDetectedException {
 		logger.info("[START] - createPack() request: {}", request);
 		
 		PackResponse response = packServiceImpl.createPack(request);

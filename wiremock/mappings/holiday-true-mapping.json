@@ -1,7 +1,7 @@
 {
   "request": {
     "method": "GET",
-    "urlPath": "/2025-12-25"
+    "urlPath": "/api/v3/publicholidays"
   },
   "response": {
     "status": 200,

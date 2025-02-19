@@ -4,6 +4,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -18,6 +19,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.web.PageableHandlerMethodArgumentResolver;
 import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
@@ -27,6 +31,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.flsolution.mercadolivre.tracking_service.dtos.request.PackRequest;
 import com.flsolution.mercadolivre.tracking_service.dtos.request.UpdateStatusRequest;
+import com.flsolution.mercadolivre.tracking_service.dtos.response.PackCancelResponse;
 import com.flsolution.mercadolivre.tracking_service.dtos.response.PackEventResponse;
 import com.flsolution.mercadolivre.tracking_service.dtos.response.PackResponse;
 import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
@@ -54,16 +59,16 @@ class PackControllerTest {
 	private ETagService eTagService;
 	
 	@Mock
-	private CacheControl cacheControlMock;	
+	private CacheControl cacheControlMock;
 
 	@BeforeEach
 	void setUp() {
 		MockitoAnnotations.openMocks(this);
 		mockMvc = MockMvcBuilders.standaloneSetup(packController)
-				.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver()) // Adiciona suporte a Pageable
+				.setCustomArgumentResolvers(new PageableHandlerMethodArgumentResolver())
 				.build();
 		objectMapper = new ObjectMapper();
-	}
+    }
 
 	@Test
 	void testCreatePackSuccessfully() throws Exception {
@@ -126,7 +131,7 @@ class PackControllerTest {
 
 		lenient().when(packService.updateStatusPack(eq(packId), eq(PackageStatus.IN_TRANSIT))).thenReturn(responseDTO);
 
-		mockMvc.perform(put("/api/v1/packs/{id}/status", packId).contentType(MediaType.APPLICATION_JSON)
+		mockMvc.perform(patch("/api/v1/packs/{id}/status", packId).contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(updateStatusRequest))).andExpect(status().isOk());
 	}
 
@@ -148,7 +153,7 @@ class PackControllerTest {
 
 		lenient().when(packService.updateStatusPack(eq(packId), eq(PackageStatus.DELIVERED))).thenReturn(responseDTO);
 
-		mockMvc.perform(put("/api/v1/packs/{id}/status", packId).contentType(MediaType.APPLICATION_JSON)
+		mockMvc.perform(patch("/api/v1/packs/{id}/status", packId).contentType(MediaType.APPLICATION_JSON)
 				.content(objectMapper.writeValueAsString(PackageStatus.DELIVERED))).andExpect(status().isBadRequest());
 	}
 	
@@ -157,5 +162,62 @@ class PackControllerTest {
         mockMvc.perform(get("/api/v1/packs/{id}", "invalid-id"))
                 .andExpect(status().isBadRequest());
     }
+    
+    @Test
+    void testGetPackById() throws Exception {
+        Long packId = 1L;
+        PackResponse responseDTO = PackResponse.builder()
+                .createdAt(LocalDateTime.now())
+                .deliveredAt(LocalDateTime.now())
+                .description("Livros para entrega")
+                .events(new ArrayList<PackEventResponse>())
+                .id(packId)
+                .recipient(null)
+                .sender(null)
+                .status(PackageStatus.CREATED)
+                .updatedAt(LocalDateTime.now())
+                .build();
+
+        lenient().when(packService.getPackByIdAndIncludeEvents(eq(packId), eq(false), any(PageRequest.class)))
+                .thenReturn(responseDTO);
+        lenient().when(eTagService.generateETag(any())).thenReturn("etag");
+        lenient().when(eTagService.isNotModified(any(), eq("etag"))).thenReturn(false);
+
+        mockMvc.perform(get("/api/v1/packs/{id}", packId))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testGetPacks() throws Exception {
+        Page<PackResponse> responsePage = new PageImpl<>(new ArrayList<>());
+
+        lenient().when(packService.getPacks(any(), any(), any(PageRequest.class)))
+                .thenReturn(responsePage);
+        lenient().when(eTagService.generateETag(any())).thenReturn("etag");
+        lenient().when(eTagService.isNotModified(any(), eq("etag"))).thenReturn(false);
+
+        mockMvc.perform(get("/api/v1/packs"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testCancelPackSuccessfully() throws Exception {
+        Long packId = 1L;
+        PackCancelResponse responseDTO = PackCancelResponse.builder()
+                .status(PackageStatus.CANCELLED)
+                .build();
+
+        lenient().when(packService.cancelPack(eq(packId))).thenReturn(responseDTO);
+
+        mockMvc.perform(put("/api/v1/packs/{id}/cancel", packId))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    void testCancelPack_whenInvalidId_thenReturnBadRequest() throws Exception {
+        mockMvc.perform(put("/api/v1/packs/{id}/cancel", "invalid-id"))
+                .andExpect(status().isBadRequest());
+    }
+    
 }
  

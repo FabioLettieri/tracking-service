@@ -29,10 +29,9 @@ class ExternalApiNagerServiceTest {
 
     @BeforeEach
     void setUp() throws NoSuchFieldException, SecurityException, IllegalArgumentException, IllegalAccessException {
-        wireMockServer = new WireMockServer(WireMockConfiguration.wireMockConfig()
-            .usingFilesUnderDirectory("wiremock"));
+        wireMockServer = new WireMockServer(
+        		WireMockConfiguration.wireMockConfig().usingFilesUnderDirectory("wiremock"));
         wireMockServer.start();
-
 
         RestTemplate restTemplate = new RestTemplateBuilder()
             .rootUri(wireMockServer.baseUrl())
@@ -42,7 +41,7 @@ class ExternalApiNagerServiceTest {
 
         Field field = ExternalApiNagerService.class.getDeclaredField("nagerDateUrl");
         field.setAccessible(true);
-        field.set(externalApiNagerService, "https://date.nager.at/api/v3/publicholidays");
+        field.set(externalApiNagerService, wireMockServer.baseUrl() + "/api/v3/publicholidays");
     }
 
     @AfterEach
@@ -68,9 +67,21 @@ class ExternalApiNagerServiceTest {
 
     @Test
     void testIsHolidayHandlesException() {
-        String testDate = "2025-12-27";
-        Boolean result = externalApiNagerService.isHoliday(testDate);
+    	
+    	String errorUrl = wireMockServer.baseUrl() + "/invalid-route";
+    	
+    	try {
+            Field field = ExternalApiTheDogService.class.getDeclaredField("nagerDateUrl");
+            field.setAccessible(true);
+            field.set(externalApiNagerService, errorUrl);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    	String testDate = "2025-12-27";
+    	
+    	Boolean response = externalApiNagerService.isHoliday(testDate);
 
-        assertFalse(result);
+        assertFalse(response);
+
     }
 }

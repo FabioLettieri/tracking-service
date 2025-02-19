@@ -4,12 +4,19 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 
+import com.flsolution.mercadolivre.tracking_service.entities.Pack;
 import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
 import com.flsolution.mercadolivre.tracking_service.exceptions.CancelPackStatusCanceledException;
 import com.flsolution.mercadolivre.tracking_service.exceptions.CancelPackStatusDeliveredException;
 import com.flsolution.mercadolivre.tracking_service.exceptions.CancelPackStatusInTransitException;
+import com.flsolution.mercadolivre.tracking_service.exceptions.PackCreateDuplicateDetectedException;
 import com.flsolution.mercadolivre.tracking_service.exceptions.PackStatusInvalidException;
 
 class PackValidationTest {
@@ -82,5 +89,35 @@ class PackValidationTest {
     @Test
     void testValidatePackElegibleForCancellation_whenStatusCreated_thenNoExceptionThrown() {
         assertDoesNotThrow(() -> PackValidation.validatePackElegibleForCancellation(PackageStatus.CREATED));
+    }
+    
+    @Test
+    void testValidateDuplicateRequest_noDuplicate() {
+    	Pack pack = new Pack();
+    	pack.setCreatedAt(LocalDateTime.now().minusMinutes(3));
+        List<Pack> packList = new ArrayList<>();
+        packList.add(pack);
+        Optional<List<Pack>> optPack = Optional.of(packList);
+
+        assertDoesNotThrow(() -> PackValidation.validateDuplicateRequest(optPack));
+    }
+
+    @Test
+    void testValidateDuplicateRequest_duplicateDetected() {
+    	Pack pack = new Pack();
+    	pack.setCreatedAt(LocalDateTime.now().minusMinutes(1));
+        List<Pack> packList = new ArrayList<>();
+        packList.add(pack);
+        Optional<List<Pack>> optPack = Optional.of(packList);
+
+        assertThrows(PackCreateDuplicateDetectedException.class, () -> PackValidation.validateDuplicateRequest(optPack),
+            "Duplicate orders detected, as there is an order placed less than 2 minutes ago.");
+    }
+
+    @Test
+    void testValidateDuplicateRequest_emptyOptional() {
+        Optional<List<Pack>> optPack = Optional.empty();
+
+        assertDoesNotThrow(() -> PackValidation.validateDuplicateRequest(optPack));
     }
 }
