@@ -170,17 +170,4 @@ public class GlobalExceptionHandler {
     	return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
 
-    /**
-     * Handle errors and return a 400 Bad Request with detailed messages.
-     */
-    @ExceptionHandler(PackCreateException.class)
-    public ResponseEntity<Map<String, String>> handlePackCreateException(PackCreateException ex) {
-    	logger.error("[ERROR] - Error when creating a new Pack.", ex.getMessage());
-    	
-    	Map<String, String> error = Collections.singletonMap("error", ex.getMessage());
-    	
-    	return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-    }
-
-
 }
