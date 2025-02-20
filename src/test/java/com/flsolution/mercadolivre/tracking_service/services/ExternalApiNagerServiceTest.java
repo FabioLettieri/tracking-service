@@ -8,19 +8,14 @@ import java.lang.reflect.Field;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.web.client.RestTemplate;
 
 import com.github.tomakehurst.wiremock.WireMockServer;
 import com.github.tomakehurst.wiremock.core.WireMockConfiguration;
 
-@ExtendWith(MockitoExtension.class)
-@TestPropertySource(properties = {
-    "spring.rabbitmq.listener.simple.auto-startup=false"
-})
+@SpringBootTest
 class ExternalApiNagerServiceTest {
 
     private ExternalApiNagerService externalApiNagerService;
