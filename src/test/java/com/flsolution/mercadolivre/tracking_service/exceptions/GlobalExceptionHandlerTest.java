@@ -115,4 +115,37 @@ class GlobalExceptionHandlerTest {
         assertEquals("Invalid request format", ((Map<?, ?>) response.getBody()).get("error"));
         assertEquals("Erro ao processar a requisição.", ((Map<?, ?>) response.getBody()).get("message"));
     }
+    
+    @Test
+    void testHandleCustomerNotFoundException() {
+    	CustomerNotFoundException ex = new CustomerNotFoundException("Cliente não encontrado.");
+
+        ResponseEntity<Map<String, String>> response = exceptionHandler.handleCustomerNotFoundException(ex);
+
+        assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+        assertEquals("Cliente não encontrado.", response.getBody().get("error"));
+    }
+    
+    @Test
+    void testHandleCustomerExistsWithDocumentOrEmailException() {
+    	CustomerExistsWithDocumentOrEmailException ex = new CustomerExistsWithDocumentOrEmailException("Documento e/ou email ja estão registrados.");
+
+        ResponseEntity<Map<String, String>> response = exceptionHandler.handleCustomerExistsWithDocumentOrEmailException(ex);
+
+        assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+        assertEquals("Documento e/ou email ja estão registrados.", response.getBody().get("error"));
+    }
+    
+    @Test
+    void testHandlePackCreateDuplicateDetectedException() {
+    	PackCreateDuplicateDetectedException ex = new PackCreateDuplicateDetectedException("Requisição duplicada foi detectada, criação do Pack foi descartada.");
+    	
+    	ResponseEntity<Map<String, String>> response = exceptionHandler.handlePackCreateDuplicateDetected(ex);
+    	
+    	assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+    	assertEquals("Requisição duplicada foi detectada, criação do Pack foi descartada.", response.getBody().get("error"));
+    }
+    
+    
+    
 }
