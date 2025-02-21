@@ -15,7 +15,7 @@ public class CustomerConverter {
 		
 		var response = new CustomerResponse(
 				customer.getId(),
-				customer.getName(),
+				customer.getUsername(),
 				customer.getDocument(),
 				customer.getPhoneNumber(),
 				customer.getEmail(),

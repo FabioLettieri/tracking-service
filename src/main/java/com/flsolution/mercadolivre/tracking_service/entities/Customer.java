@@ -24,7 +24,7 @@ public class Customer extends EntityBase {
 	private static final long serialVersionUID = 4617900183301692612L;
 	
 	@Column(nullable = false)
-	private String name;
+	private String username;
 	
 	@Column(nullable = false, unique = true)
 	private String document;

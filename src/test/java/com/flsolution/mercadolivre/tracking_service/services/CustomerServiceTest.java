@@ -51,7 +51,7 @@ class CustomerServiceTest {
 	@BeforeEach
 	void setUp() {
 		customerRequest = new CustomerRequest("name", "12345678900", "11912345678", "email@email.com", "address");
-		customer = Customer.builder().address("address").document("document").email("email@email.com").name("name")
+		customer = Customer.builder().address("address").document("document").email("email@email.com").username("name")
 				.phoneNumber("phoneNumber").packs(new ArrayList<Pack>()).build();
 		customerResponse = CustomerConverter.toResponse(customer);
 	}

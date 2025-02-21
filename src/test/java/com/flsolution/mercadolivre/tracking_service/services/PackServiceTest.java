@@ -81,7 +81,7 @@ class PackServiceTest {
         		.address("Rua da amora")
         		.document("12365478900")
         		.email("customer@email.com")
-        		.name("customer 01")
+        		.username("customer 01")
         		.packs(new ArrayList<Pack>())
         		.phoneNumber("11912345678")
         		.build();

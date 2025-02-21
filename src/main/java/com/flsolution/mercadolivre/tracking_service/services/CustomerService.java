@@ -39,7 +39,7 @@ public class CustomerService implements CustomerServiceImpl {
 				.address(request.address())
 				.document(request.document())
 				.email(request.email())
-				.name(request.name())
+				.username(request.name())
 				.phoneNumber(request.phoneNumber())
 				.packs(new ArrayList<Pack>())
 				.build();

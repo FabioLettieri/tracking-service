@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.flsolution.mercadolivre</groupId>
     <artifactId>tracking-service</artifactId>
-    <version>1.9.0</version>
+    <version>1.9.1</version>
     <name>tracking-service</name>
     <description>Sistema de rastreamento de pacotes</description>
 
@@ -95,6 +95,20 @@
 		    <artifactId>resilience4j-spring-boot3</artifactId>
 		    <version>2.0.2</version>
 		</dependency>
+		
+		<!-- WebFlux -->
+		<dependency>
+		    <groupId>org.springframework.boot</groupId>
+		    <artifactId>spring-boot-starter-webflux</artifactId>
+		</dependency>
+		
+		<!-- Apache HttpClient 5 -->
+		<dependency>
+		    <groupId>org.apache.httpcomponents.client5</groupId>
+		    <artifactId>httpclient5</artifactId>
+		</dependency>
+
+
 
 
         <!-- Lombok -->
