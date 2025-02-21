@@ -45,6 +45,19 @@ spring:
       port: 6379
       timeout: 60000
 
+resilience4j:
+  circuitbreaker:
+    instances:
+      trackingService:
+        slidingWindowSize: 10
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10000ms
+        permittedNumberOfCallsInHalfOpenState: 5
+        minimumNumberOfCalls: 5
+        automaticTransitionFromOpenToHalfOpenEnabled: true
+        recordExceptions:
+          - org.springframework.web.client.HttpServerErrorException
+          - java.util.concurrent.TimeoutException
 
 flyway:
   enabled: true

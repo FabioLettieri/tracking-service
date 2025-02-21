@@ -8,12 +8,14 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import com.flsolution.mercadolivre.tracking_service.dtos.request.HolidayRequest;
 import com.flsolution.mercadolivre.tracking_service.services.impl.ExternalApiNagerServiceImpl;
 
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -26,6 +28,8 @@ public class ExternalApiNagerService implements ExternalApiNagerServiceImpl {
 	@Value("${external-apis.nager-date-url}")
 	private String nagerDateUrl;
 
+	@Override
+	@CircuitBreaker(name = "trackingService", fallbackMethod = "fallbackResponse")
 	public Boolean isHoliday(String date) {
 		logger.info("[START] - isHoliday() date: {}", date);
 
@@ -47,5 +51,13 @@ public class ExternalApiNagerService implements ExternalApiNagerServiceImpl {
             return false;
         }
 	}
+	
+	public ResponseEntity<String> fallbackResponse(String url, Throwable t) {
+		logger.error("[START] - fallbackResponse()");
+		ResponseEntity<String> response = ResponseEntity.status(503).body("Serviço ExternalApiNagerService temporariamente indisponível.");
+		
+		logger.error("[FINISH] - fallbackResponse() WITH ERRORS: {}", response.getBody());
+        return response;
+    }
 
 }
