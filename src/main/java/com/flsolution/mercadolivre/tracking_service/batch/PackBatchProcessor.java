@@ -11,17 +11,19 @@ import org.springframework.stereotype.Component;
 import com.flsolution.mercadolivre.tracking_service.enums.PackageStatus;
 import com.flsolution.mercadolivre.tracking_service.repositories.PackRepository;
 
+import io.github.resilience4j.retry.annotation.Retry;
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
 public class PackBatchProcessor {
 	
-	private static final Logger logger = LoggerFactory.getLogger(PackEventBatchProcessor.class);
+	private static final Logger logger = LoggerFactory.getLogger(PackBatchProcessor.class);
 	private final PackRepository packRepository;
 	
 	@Async("taskExecutor")
 	@Scheduled(cron = "0 0 0 * * ?")
+	@Retry(name = "deactivatePackageRetry", fallbackMethod = "fallbackDeactivateOldInTransitPackages")
 	public void deactivateOldInTransitPackages() {
 	    logger.info("[START] - deactivateOldInTransitPackages()");
 
@@ -30,5 +32,9 @@ public class PackBatchProcessor {
 
 	    logger.info("[FINISH] - deactivateOldInTransitPackages() deactivated registers: {}", deletedCount);
 	}
+	
+	public void fallbackDeactivateOldInTransitPackages(Exception ex) {
+        logger.error("[FALLBACK] - deactivateOldInTransitPackages() failed: {}", ex.getMessage());
+    }
 
 }
