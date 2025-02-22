@@ -42,7 +42,7 @@ public class CustomerController {
 	private final ETagService eTagService;
 	
 	@Operation(summary = "Criar um novo cliente", description = "Cria um novo cliente para inserção de pacotes")
-	@ApiResponse(responseCode = "200", description = "Cliente criado com sucesso.", content = @Content(schema = @Schema(implementation = CustomerResponse.class)))
+	@ApiResponse(responseCode = "201", description = "Cliente criado com sucesso.", content = @Content(schema = @Schema(implementation = CustomerResponse.class)))
 	@ApiResponse(responseCode = "400", description = "Cliente não foi criado por falta de parametros e/ou por parametros errados.")
 	@PostMapping
 	public ResponseEntity<CustomerResponse> createCustomer(@RequestBody @Valid CustomerRequest request) {
@@ -50,7 +50,7 @@ public class CustomerController {
 		CustomerResponse response = customerServiceImpl.createCustomer(request);
 		
 		logger.info("[FINISH] - createCustomer()");
-		return ResponseEntity.ok(response);
+		return ResponseEntity.status(HttpStatus.CREATED).body(response);
 	}
 	
 	@Operation(summary = "Buscar todos os customers", description = "Retorna todos os customers paginado")
