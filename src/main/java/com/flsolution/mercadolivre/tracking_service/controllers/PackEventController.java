@@ -65,10 +65,10 @@ public class PackEventController {
                 .body(response);
 	}
 	
-	@Operation(summary = "Criar um novo evento do pacote", description = "Cria um novo evento com status de atualizações")
-	@ApiResponse(responseCode = "200", description = "PackEvent criado com sucesso.", content = @Content(schema = @Schema(implementation = PackEventRequest.class)))
-	@ApiResponse(responseCode = "400", description = "PackEvent não foi criado por falta de parametros e/ou por parametros errados.")
-	@ApiResponse(responseCode = "404", description = "PackEvent não foi criado por ID informado errado.")
+	@Operation(summary = "Gera uma mensagem de um novo evento do pacote", description = "Envia para uma fila a requisição, retornando 200 caso tenha sido gerado a mensagem.")
+	@ApiResponse(responseCode = "200", description = "PackEvent gerado e enviado para a fila de criação.", content = @Content(schema = @Schema(implementation = PackEventRequest.class)))
+	@ApiResponse(responseCode = "400", description = "PackEvent não foi gerado e/ou enviado por falta de parametros e/ou por parametros errados.")
+	@ApiResponse(responseCode = "404", description = "PackEvent não foi gerado e/ou enviado por ID informado errado.")
 	@PostMapping
     public ResponseEntity<String> createPackEvent(@RequestBody @Valid PackEventRequest requestDTO) throws Exception {
         logger.info("[START] - createPackEvent()");
@@ -79,7 +79,7 @@ public class PackEventController {
         return ResponseEntity.status(HttpStatus.CREATED).body("O Evento foi enviado para o processamento.");
     }
 
-	@Operation(summary = "Criar um novo evento do pacote", description = "Cria um novo evento com status de atualizações")
+	@Operation(summary = "Criar uma lista de novos evento do pacote a ser enviado a fila", description = "Cria um novo evento com status de atualizações")
 	@ApiResponse(responseCode = "200", description = "PackEvent criado com sucesso.", content = @Content(schema = @Schema(implementation = PackEventRequest.class)))
 	@ApiResponse(responseCode = "400", description = "PackEvent não foi criado por falta de parametros e/ou por parametros errados.")
 	@ApiResponse(responseCode = "404", description = "PackEvent não foi criado por ID informado errado.")

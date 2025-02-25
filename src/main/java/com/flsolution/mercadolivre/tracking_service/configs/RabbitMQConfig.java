@@ -2,7 +2,10 @@ package com.flsolution.mercadolivre.tracking_service.configs;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.core.*;
+import org.springframework.amqp.core.Binding;
+import org.springframework.amqp.core.BindingBuilder;
+import org.springframework.amqp.core.DirectExchange;
+import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -15,20 +18,9 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
     private static final Logger logger = LoggerFactory.getLogger(RabbitMQConfig.class);
 
-    public static final String REQUEST_LOG_QUEUE = "request-log-queue";
     public static final String TRACKING_EVENTS_QUEUE = "tracking-events-queue";
     public static final String TRACKING_EVENTS_EXCHANGE = "tracking-events-exchange";
     public static final String TRACKING_EVENTS_ROUTING_KEY = "tracking.events";
-
-    @Bean
-    Queue requestLogQueue() {
-    	logger.info("[START] - requestLogQueue()");
-
-    	Queue response = new Queue(REQUEST_LOG_QUEUE, true);
-        
-    	logger.info("[FINISH] - requestLogQueue()");
-    	return response;
-    }
 
     @Bean
     Queue trackingEventsQueue() {

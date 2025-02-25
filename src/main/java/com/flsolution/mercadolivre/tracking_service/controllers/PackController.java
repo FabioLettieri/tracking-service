@@ -48,9 +48,9 @@ public class PackController {
 	private final PackServiceImpl packServiceImpl;
 	private final ETagService eTagService;
 	
-	@Operation(summary = "Criar um novo pacote", description = "Envia para uma fila a requisição, retornando 200 caso tenha sido gerado a mensagem.")
-	@ApiResponse(responseCode = "200", description = "Pacote gerado e encaminhado para a fila de criação.", content = @Content(schema = @Schema(implementation = PackResponse.class)))
-	@ApiResponse(responseCode = "400", description = "Pacote não foi gerado e/ou enviado para a fila de criação por falta de parametros e/ou por parametros errados.")
+	@Operation(summary = "Criar um novo pacote", description = "Cria um novo pacote para rastreamento")
+	@ApiResponse(responseCode = "200", description = "Pacote criado com sucesso.", content = @Content(schema = @Schema(implementation = PackResponse.class)))
+	@ApiResponse(responseCode = "400", description = "Pacote não foi criado por falta de parametros e/ou por parametros errados.")
 	@PostMapping
 	public ResponseEntity<PackResponse> createPack(@RequestBody @Valid PackRequest request) throws CustomerNotFoundException, PackCreateDuplicateDetectedException {
 		logger.info("[START] - createPack() request: {}", request);
